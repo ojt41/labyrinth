@@ -1,3 +1,4 @@
-class Rat {
+
+class Rat(var currentPos: Passage){
 
 }
