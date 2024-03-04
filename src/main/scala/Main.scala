@@ -7,7 +7,7 @@ import scalafx.scene.paint.Color
 import scalafx.Includes._
 
 object MazeGUI extends JFXApp3 {
-  val game = Game(new Rat(Passage(0, 0)), new Timer, new Storage)
+  val game = new Game(new Rat(Passage(0, 0)), new Timer, new Storage)
   val maze = game.newMaze(20, 20)
   val rat = game.rat
 
@@ -32,12 +32,12 @@ object MazeGUI extends JFXApp3 {
         gc.fillRect(x, y, 20, 20)
       }
 
-      gc.fill = Color.Blue
+      gc.fill = Color.Blue // Rat color
       val ratX = rat.currentPos.col * 20
       val ratY = rat.currentPos.row * 20
       gc.fillRect(ratX, ratY, 20, 20)
 
-      gc.fill = Color.Green
+      gc.fill = Color.Green // End point color
       val endX = maze.wid * 20 - 20
       val endY = maze.len * 20 - 20
       gc.fillRect(endX, endY, 20, 20)
@@ -50,10 +50,10 @@ object MazeGUI extends JFXApp3 {
 
     canvas.onKeyPressed = (event: KeyEvent) => {
       event.code match {
-        case scalafx.scene.input.KeyCode.Up => rat.moveUp()
-        case scalafx.scene.input.KeyCode.Down => rat.moveDown()
-        case scalafx.scene.input.KeyCode.Left => rat.moveLeft()
-        case scalafx.scene.input.KeyCode.Right => rat.moveRight()
+        case scalafx.scene.input.KeyCode.Up => rat.moveUp(maze.passages)
+        case scalafx.scene.input.KeyCode.Down => rat.moveDown(maze.passages)
+        case scalafx.scene.input.KeyCode.Left => rat.moveLeft(maze.passages)
+        case scalafx.scene.input.KeyCode.Right => rat.moveRight(maze.passages)
         case _ =>
       }
       drawMaze()
