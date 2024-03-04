@@ -9,7 +9,7 @@ import scalafx.scene.input.KeyCode
 
 object MazeGUI extends JFXApp3 {
   val game = new Game(new Rat(Passage(20, 20)), new Timer, new Storage)
-  val maze = game.newMaze(41, 41)
+  val maze = game.newMaze(41,41)
   val rat = game.rat
   var highlightSolution: Boolean = false
   var solution: Array[Passage] = Array.empty
@@ -83,10 +83,18 @@ object MazeGUI extends JFXApp3 {
         case KeyCode.Right => rat.moveRight(maze)
         case KeyCode.Space => rat.moveToOtherEnd(maze)
         case KeyCode.H     => {
-          highlightSolution = !highlightSolution
-          if (highlightSolution) solveAndHighlight()
+          highlightSolution = true
+          solveAndHighlight()
         }
         case _             =>
+      }
+      drawMaze()
+    }
+
+    canvas.onKeyReleased = (event: KeyEvent) => {
+      event.code match {
+        case KeyCode.H => highlightSolution = false
+        case _        =>
       }
       drawMaze()
     }
