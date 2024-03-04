@@ -5,16 +5,20 @@ import scalafx.scene.input.KeyEvent
 import scalafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
 import scalafx.Includes._
+import scalafx.scene.input.KeyCode
 
 object MazeGUI extends JFXApp3 {
-  val game = new Game(new Rat(Passage(10, 10)), new Timer, new Storage)
-  val maze = game.newMaze(20, 20)
+  val game = new Game(new Rat(Passage(20, 20)), new Timer, new Storage)
+  val maze = game.newMaze(41, 41)
   val rat = game.rat
+  var highlightSolution: Boolean = false
+  var solution: Array[Passage] = Array.empty
+
+  def solveAndHighlight(): Unit = {
+    solution = maze.solveMaze(rat)
+  }
 
   override def start(): Unit = {
-    val BAR_HEIGHT = 60
-    val DEATH_BOX_WIDTH = 12
-
     val canvasWidth = maze.wid * 20
     val canvasHeight = maze.len * 20
 
@@ -22,10 +26,10 @@ object MazeGUI extends JFXApp3 {
     val gc: GraphicsContext = canvas.graphicsContext2D
 
     def drawMaze(): Unit = {
-      gc.fill = Color.White
+      gc.fill = Color.Black
       gc.fillRect(0, 0, canvasWidth, canvasHeight)
 
-      gc.fill = Color.Black
+      gc.fill = Color.White
       maze.passages.foreach { passage =>
         val x = passage.col * 20
         val y = passage.row * 20
@@ -37,13 +41,13 @@ object MazeGUI extends JFXApp3 {
       val ratY = rat.currentPos.row * 20
       gc.fillRect(ratX, ratY, 20, 20)
 
-      gc.fill = Color.Green // End point color
+      gc.fill = Color.Green
       val endX = maze.wid * 20 - 20
       val endY = maze.len * 20 - 20
       gc.fillRect(endX, endY, 20, 20)
 
-      gc.setStroke(Color.Red) // Bridge color
-      gc.setLineWidth(5) // Thickness of the bridge lines
+      gc.setStroke(Color.Red)
+      gc.setLineWidth(3)
 
       maze.bridges.foreach { bridge =>
         val entrance1 = bridge.entrance1
@@ -54,6 +58,16 @@ object MazeGUI extends JFXApp3 {
         val y2 = entrance2.row * 20 + 10
         gc.strokeLine(x1, y1, x2, y2)
       }
+
+      if (highlightSolution) {
+        gc.setStroke(Color.Green)
+        gc.setLineWidth(2)
+        solution.foreach { passage =>
+          val x = passage.col * 20 + 10
+          val y = passage.row * 20 + 10
+          gc.strokeOval(x, y, 5, 5)
+        }
+      }
     }
 
     drawMaze()
@@ -63,11 +77,16 @@ object MazeGUI extends JFXApp3 {
 
     canvas.onKeyPressed = (event: KeyEvent) => {
       event.code match {
-        case scalafx.scene.input.KeyCode.Up    => rat.moveUp(maze.passages)
-        case scalafx.scene.input.KeyCode.Down  => rat.moveDown(maze.passages)
-        case scalafx.scene.input.KeyCode.Left  => rat.moveLeft(maze.passages)
-        case scalafx.scene.input.KeyCode.Right => rat.moveRight(maze.passages)
-        case _                                 =>
+        case KeyCode.Up    => rat.moveUp(maze)
+        case KeyCode.Down  => rat.moveDown(maze)
+        case KeyCode.Left  => rat.moveLeft(maze)
+        case KeyCode.Right => rat.moveRight(maze)
+        case KeyCode.Space => rat.moveToOtherEnd(maze)
+        case KeyCode.H     => {
+          highlightSolution = !highlightSolution
+          if (highlightSolution) solveAndHighlight()
+        }
+        case _             =>
       }
       drawMaze()
     }
