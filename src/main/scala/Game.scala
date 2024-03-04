@@ -64,10 +64,9 @@ class Game(val rat: Rat, val timer: Timer, val storage: Storage ) {
     rat.currentPos = start
   }
 
-  def endGame(maze: Maze): Unit = {
+  def endGame(maze: Maze): Boolean = {
     val end = Cell(maze.len - 1, maze.wid - 1)
-    if rat.currentPos == end then
-      println("game over")
+    rat.currentPos == end
   }
 }
 
