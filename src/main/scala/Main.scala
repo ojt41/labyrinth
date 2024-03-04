@@ -1,9 +1,10 @@
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
-import scalafx.scene.control.Button
-import scalafx.scene.layout.{BorderPane, HBox}
+import scalafx.scene.input.KeyEvent
+import scalafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
+import scalafx.Includes._
 
 object MazeGUI extends JFXApp3 {
   val game = Game(new Rat(Passage(0, 0)), new Timer, new Storage)
@@ -44,35 +45,22 @@ object MazeGUI extends JFXApp3 {
 
     drawMaze()
 
-    val moveUpButton = new Button("Up")
-    moveUpButton.onAction = _ => {
-      rat.moveUp()
+    canvas.requestFocus()
+    canvas.focusTraversable = true
+
+    canvas.onKeyPressed = (event: KeyEvent) => {
+      event.code match {
+        case scalafx.scene.input.KeyCode.Up => rat.moveUp()
+        case scalafx.scene.input.KeyCode.Down => rat.moveDown()
+        case scalafx.scene.input.KeyCode.Left => rat.moveLeft()
+        case scalafx.scene.input.KeyCode.Right => rat.moveRight()
+        case _ =>
+      }
       drawMaze()
     }
-
-    val moveDownButton = new Button("Down")
-    moveDownButton.onAction = _ => {
-      rat.moveDown()
-      drawMaze()
-    }
-
-    val moveLeftButton = new Button("Left")
-    moveLeftButton.onAction = _ => {
-      rat.moveLeft()
-      drawMaze()
-    }
-
-    val moveRightButton = new Button("Right")
-    moveRightButton.onAction = _ => {
-      rat.moveRight()
-      drawMaze()
-    }
-
-    val buttonBox = new HBox(10, moveUpButton, moveDownButton, moveLeftButton, moveRightButton)
 
     val root = new BorderPane
     root.center = canvas
-    root.bottom = buttonBox
 
     val mainScene = new Scene(root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
 
