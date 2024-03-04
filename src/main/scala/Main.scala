@@ -8,8 +8,14 @@ import scalafx.Includes._
 import scalafx.scene.input.KeyCode
 
 object MazeGUI extends JFXApp3 {
-  val game = new Game(new Rat(Passage(0,0)), new Timer, new Storage)
-  val maze = game.newMaze(40, 40)
+
+  println("Enter Length: ")
+  val length = scala.io.StdIn.readInt()
+  println("Enter width: ")
+  val mazeWid = scala.io.StdIn.readInt()
+
+  val game = new Game(new Rat(Passage( length/2, mazeWid/2)), new Timer, new Storage)
+  val maze = game.newMaze(length, mazeWid)
   val rat = game.rat
   game.startGame(maze)
   var highlightSolution: Boolean = false
@@ -78,16 +84,16 @@ object MazeGUI extends JFXApp3 {
 
     canvas.onKeyPressed = (event: KeyEvent) => {
       event.code match {
-        case KeyCode.Up    => rat.moveUp(maze)
-        case KeyCode.Down  => rat.moveDown(maze)
-        case KeyCode.Left  => rat.moveLeft(maze)
+        case KeyCode.Up => rat.moveUp(maze)
+        case KeyCode.Down => rat.moveDown(maze)
+        case KeyCode.Left => rat.moveLeft(maze)
         case KeyCode.Right => rat.moveRight(maze)
         case KeyCode.Space => rat.moveToOtherEnd(maze)
-        case KeyCode.H     => {
+        case KeyCode.H => {
           highlightSolution = true
           solveAndHighlight()
         }
-        case _             =>
+        case _ =>
       }
       drawMaze()
     }
@@ -95,7 +101,7 @@ object MazeGUI extends JFXApp3 {
     canvas.onKeyReleased = (event: KeyEvent) => {
       event.code match {
         case KeyCode.H => highlightSolution = false
-        case _        =>
+        case _ =>
       }
       drawMaze()
     }
@@ -103,7 +109,8 @@ object MazeGUI extends JFXApp3 {
     val root = new BorderPane
     root.center = canvas
 
-    val mainScene = new Scene(root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
+    val mainScene = new Scene(
+root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
 
     stage = new JFXApp3.PrimaryStage {
       title = "Maze Game"
