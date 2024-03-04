@@ -8,9 +8,10 @@ import scalafx.Includes._
 import scalafx.scene.input.KeyCode
 
 object MazeGUI extends JFXApp3 {
-  val game = new Game(new Rat(Passage(20, 20)), new Timer, new Storage)
-  val maze = game.newMaze(41,41)
+  val game = new Game(new Rat(Passage(0,0)), new Timer, new Storage)
+  val maze = game.newMaze(40, 40)
   val rat = game.rat
+  game.startGame(maze)
   var highlightSolution: Boolean = false
   var solution: Array[Passage] = Array.empty
 
