@@ -1,21 +1,29 @@
 class Rat(var currentPos: Passage) {
-  def moveUp(passages: Seq[Passage]): Unit = {
+  def moveUp(maze: Maze): Unit = {
     val newPos = Passage(currentPos.row - 1, currentPos.col)
-    if (passages.contains(newPos)) currentPos = newPos
+    if (maze.hasPassage(newPos) || maze.hasBridge(currentPos, newPos)) currentPos = newPos
   }
 
-  def moveDown(passages: Seq[Passage]): Unit = {
+  def moveDown(maze: Maze): Unit = {
     val newPos = Passage(currentPos.row + 1, currentPos.col)
-    if (passages.contains(newPos)) currentPos = newPos
+    if (maze.hasPassage(newPos) || maze.hasBridge(currentPos, newPos)) currentPos = newPos
   }
 
-  def moveLeft(passages: Seq[Passage]): Unit = {
+  def moveLeft(maze: Maze): Unit = {
     val newPos = Passage(currentPos.row, currentPos.col - 1)
-    if (passages.contains(newPos)) currentPos = newPos
+    if (maze.hasPassage(newPos) || maze.hasBridge(currentPos, newPos)) currentPos = newPos
   }
 
-  def moveRight(passages: Seq[Passage]): Unit = {
+  def moveRight(maze: Maze): Unit = {
     val newPos = Passage(currentPos.row, currentPos.col + 1)
-    if (passages.contains(newPos)) currentPos = newPos
+    if (maze.hasPassage(newPos) || maze.hasBridge(currentPos, newPos)) currentPos = newPos
+  }
+
+  def moveToOtherEnd(maze: Maze): Unit = {
+    maze.bridges.find(bridge => bridge.entrance1 == currentPos || bridge.entrance2 == currentPos) match {
+      case Some(bridge) =>
+        currentPos = if (currentPos == bridge.entrance1) bridge.entrance2 else bridge.entrance1
+      case None => // Rat is not on any bridge entrance
+    }
   }
 }
