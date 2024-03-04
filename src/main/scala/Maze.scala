@@ -75,4 +75,25 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
 
   def updateHighScore(player: String, timeTaken: Int): Unit =
     highscore = (player, timeTaken)
+
+  def hasPassage(cell: Cell): Boolean =
+    passages.exists(p => p.row == cell.row && p.col == cell.col)
+
+  def hasBridge(cell1: Cell, cell2: Cell): Boolean =
+    bridges.exists(b => (b.entrance1 == cell1 && b.entrance2 == cell2) || (b.entrance1 == cell2 && b.entrance2 == cell1))
+
+  def possibleMoves(cell: Cell): List[Cell] = {
+    val neighbors = List(
+      Cell(cell.row, cell.col - 1), // Left
+      Cell(cell.row, cell.col + 1), // Right
+      Cell(cell.row - 1, cell.col), // Up
+      Cell(cell.row + 1, cell.col)  // Down
+    )
+
+    neighbors.filter(validMove)
+  }
+
+  private def validMove(cell: Cell): Boolean =
+    cell.row >= 0 && cell.row < len && cell.col >= 0 && cell.col < wid && (hasPassage(cell) || hasBridge(cell, cell))
+
 }
