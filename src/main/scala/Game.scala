@@ -30,7 +30,7 @@ class Game(val rat: Rat, val timer: Timer, val storage: Storage ) {
         bridgesE.append(new Bridge(randomPassage(i), randomPassage(i+1)))
       i += 2
 
-    val bridges = bridgesE.toArray
+    val bridges = bridgesE.take(6).toArray
 
 
     val newMazeReturn = new Maze(len, wid, passages.toArray, walls.toArray, bridges)
