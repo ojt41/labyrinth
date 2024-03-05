@@ -84,6 +84,13 @@ object MazeGUI extends JFXApp3 {
         val y1 = entrance1.row * 20 + 10
         val x2 = entrance2.col * 20 + 10
         val y2 = entrance2.row * 20 + 10
+
+        if (highlightSolution && (solution.contains(entrance1)) && (solution.contains(entrance2)))then {
+          gc.setStroke(Color.Green)
+        } else {
+          gc.setStroke(Color.Red)
+        }
+
         gc.strokeLine(x1, y1, x2, y2)
       }
 
@@ -135,7 +142,7 @@ object MazeGUI extends JFXApp3 {
         }
         case KeyCode.Right => {
           if (!timerRunning) {
-           startTime = System.nanoTime()
+            startTime = System.nanoTime()
             timerRunning = true
             timer.start()
           }
@@ -167,11 +174,13 @@ object MazeGUI extends JFXApp3 {
     }
 
     canvas.onKeyReleased = (event: KeyEvent) => {
-      event.code match {
-        case KeyCode.H => highlightSolution = false
+      event.code match{
+        case KeyCode.H =>{
+          highlightSolution=false
+          drawMaze()
+        }
         case _ =>
       }
-      drawMaze()
     }
 
     val root = new BorderPane
@@ -188,3 +197,4 @@ object MazeGUI extends JFXApp3 {
     }
   }
 }
+
