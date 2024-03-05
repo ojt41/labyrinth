@@ -181,7 +181,7 @@ object MazeGUI extends JFXApp3 {
       root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
 
     stage = new JFXApp3.PrimaryStage {
-      title = "Maze Game"
+      title = "lost in maze"
       width = canvasWidth + 20
       height = canvasHeight + 100
       scene = mainScene
