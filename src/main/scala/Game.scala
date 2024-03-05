@@ -58,7 +58,6 @@ class Game(val rat: Rat, val timer: Timer, val storage: Storage ) {
   }
 
   def startGame(maze: Maze): Unit = {
-    // Implement game start logic
 
     val start = Passage(maze.len / 2, maze.wid / 2)
     rat.currentPos = start
