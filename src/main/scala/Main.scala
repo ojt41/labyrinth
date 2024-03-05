@@ -8,6 +8,7 @@ import scalafx.Includes._
 import scalafx.scene.input.KeyCode
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
+import scalafx.animation.AnimationTimer
 
 object MazeGUI extends JFXApp3 {
 
@@ -23,6 +24,10 @@ object MazeGUI extends JFXApp3 {
   var highlightSolution: Boolean = false
   var solution: Array[Passage] = Array.empty
 
+  var startTime: Long = 0
+  var elapsedTime: Long = 0
+  var timerRunning: Boolean = false
+
   def solveAndHighlight(): Unit = {
     solution = maze.solveMaze(rat)
   }
@@ -31,9 +36,15 @@ object MazeGUI extends JFXApp3 {
     val alert = new Alert(AlertType.Information)
     alert.title = "Congratulations!"
     alert.headerText = "Victory!"
-    alert.contentText = "You have reached the exit. Congratulations on solving the maze!"
+    alert.contentText = s"You have reached the exit in ${elapsedTime / 1e9} seconds. Congratulations on solving the maze!"
     alert.showAndWait()
   }
+
+  val timer = AnimationTimer(time => {
+    if (timerRunning) {
+      elapsedTime = time - startTime
+    }
+  })
 
   override def start(): Unit = {
     val canvasWidth = maze.wid * 20
@@ -85,6 +96,11 @@ object MazeGUI extends JFXApp3 {
           gc.strokeOval(x, y, 5, 5)
         }
       }
+
+      // Draw timer
+      gc.setStroke(Color.White)
+      gc.setLineWidth(1)
+      gc.strokeText(s"Time: ${elapsedTime / 1e9} seconds", 10, canvasHeight - 10)
     }
 
     drawMaze()
@@ -94,11 +110,46 @@ object MazeGUI extends JFXApp3 {
 
     canvas.onKeyPressed = (event: KeyEvent) => {
       event.code match {
-        case KeyCode.Up => rat.moveUp(maze)
-        case KeyCode.Down => rat.moveDown(maze)
-        case KeyCode.Left => rat.moveLeft(maze)
-        case KeyCode.Right => rat.moveRight(maze)
-        case KeyCode.Space => rat.moveToOtherEnd(maze)
+        case KeyCode.Up => {
+          if (!timerRunning) {
+            startTime = System.nanoTime()
+            timerRunning = true
+            timer.start()
+          }
+          rat.moveUp(maze)
+        }
+        case KeyCode.Down => {
+          if (!timerRunning) {
+            startTime = System.nanoTime()
+            timerRunning = true
+            timer.start()
+          }
+          rat.moveDown(maze)
+        }
+        case KeyCode.Left => {
+          if (!timerRunning) {
+            startTime = System.nanoTime()
+            timerRunning = true
+            timer.start()
+          }
+          rat.moveLeft(maze)
+        }
+        case KeyCode.Right => {
+          if (!timerRunning) {
+            startTime = System.nanoTime()
+            timerRunning = true
+            timer.start()
+          }
+          rat.moveRight(maze)
+        }
+        case KeyCode.Space => {
+          if (!timerRunning) {
+            startTime = System.nanoTime()
+            timerRunning = true
+            timer.start()
+          }
+          rat.moveToOtherEnd(maze)
+        }
         case KeyCode.H => {
           highlightSolution = true
           solveAndHighlight()
@@ -107,6 +158,8 @@ object MazeGUI extends JFXApp3 {
       }
 
       if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1)) {
+        timer.stop()
+        timerRunning = false
         showVictoryMessage()
       }
 
