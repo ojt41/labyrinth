@@ -14,6 +14,5 @@ case class Timer() {
   }
 
   def stop(): Unit = {
-    // Stop timer logic here
   }
 }

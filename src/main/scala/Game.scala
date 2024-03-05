@@ -39,9 +39,9 @@ class Game(val rat: Rat, val timer: Timer, val storage: Storage ) {
     grid.indices.foreach { row =>
       grid(row).indices.foreach { col =>
         if (row == start.row && col == start.col) {
-          print("S") // Print 'S' for start
+          print("S")
         } else if (row == end.row && col == end.col) {
-          print("E") // Print 'E' for end
+          print("E")
         } else {
           if (grid(row)(col)) print("_") else print("#")
         }

@@ -23,7 +23,7 @@ class Rat(var currentPos: Passage) {
     maze.bridges.find(bridge => bridge.entrance1 == currentPos || bridge.entrance2 == currentPos) match {
       case Some(bridge) =>
         currentPos = if (currentPos == bridge.entrance1) bridge.entrance2 else bridge.entrance1
-      case None => // Rat is not on any bridge entrance
+      case None => 
     }
   }
 }

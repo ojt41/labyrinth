@@ -8,7 +8,6 @@ object MazeGenerator {
     val stack = mutable.Stack[Cell]()
     val rand = new Random()
 
-    // Set the starting point to the bottom right corner
     val startCell = Cell(rows - 1, cols - 1)
 
     def markVisited(cell: Cell): Unit = {
@@ -78,7 +77,6 @@ object MazeGenerator {
         val bridge1 = Bridge(passage1, passage2)
         val bridge2 = Bridge(passage3, passage4)
 
-        // Check if the bridges overlap with each other
         val overlaps = bridges.exists(existingBridge =>
           (existingBridge.entrance1 == bridge1.entrance1 && existingBridge.entrance2 == bridge1.entrance2) ||
           (existingBridge.entrance1 == bridge2.entrance1 && existingBridge.entrance2 == bridge2.entrance2) ||
@@ -105,9 +103,9 @@ object MazeGenerator {
     grid.indices.foreach { row =>
       grid(row).indices.foreach { col =>
         if (row == start.row && col == start.col) {
-          print("S") // Print 'S' for start
+          print("S") 
         } else if (row == end.row && col == end.col) {
-          print("E") // Print 'E' for end
+          print("E") 
         } else {
           if (grid(row)(col)) print("_") else print("#")
         }
