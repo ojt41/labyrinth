@@ -12,66 +12,64 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
     val end = Passage(this.len - 1, this.wid - 1)
     /*println(start)
     println(end)*/
-    val stack = mutable.Stack[Passage]()
-    val visited = mutable.ArrayBuffer[Passage]()
+    val queue = mutable.Queue[Passage]()
+    val visited = mutable.Set[Passage]()
     val howToGet = mutable.Map[Passage, Passage]()
     howToGet += start -> start
 
-    stack.append(start)
+    queue.enqueue(start)
 
-    while (stack.nonEmpty) do {
-      var current = stack.head
+    while (queue.nonEmpty) {
+      val current = queue.dequeue()
 
-      var passageLeft = Passage(current.row, current.col - 1)
-      if passages.contains(passageLeft) && !visited.contains(passageLeft) then {
-        stack.append(passageLeft)
-        howToGet += passageLeft -> current
+      val neighbors = possiblePassages(current)
+      neighbors.foreach { neighbor =>
+        if !visited.contains(neighbor) then {
+          queue.enqueue(neighbor)
+          howToGet += neighbor -> current
+          visited.add(neighbor)
+        }
       }
-
-
-      var passageRight = Passage(current.row, current.col + 1)
-      if passages.contains(passageRight) && !visited.contains(passageRight) then {
-        stack.append(passageRight)
-        howToGet += passageRight -> current
-      }
-
-      var passageUp = Passage(current.row - 1, current.col)
-      if passages.contains(passageUp) && !visited.contains(passageUp) then {
-        stack.append(passageUp)
-        howToGet += passageUp -> current
-      }
-
-      var passageDown = Passage(current.row + 1, current.col)
-      if passages.contains(passageDown) && !visited.contains(passageDown) then {
-        stack.append(passageDown)
-        howToGet += passageDown -> current
-      }
-
-      visited.append(current)
-      stack.pop()
-
-
     }
-
-    //howToGet.foreach(println(_))
-
-    //println(s"${howToGet(end)} key")
 
     val path = mutable.Buffer[Passage]()
     var key = end
     path.append(key)
 
-    while key!= start do
-      var value = howToGet(key)
+    while (key != start) {
+      val value = howToGet(key)
       path.append(value)
       key = value
-
-
-
-
+    }
 
     path.reverse.toArray
   }
+  def possiblePassages(passage: Passage): List[Passage] = {
+    val neighbors = List(
+      Passage(passage.row, passage.col - 1), // Left
+      Passage(passage.row, passage.col + 1), // Right
+      Passage(passage.row - 1, passage.col), // Up
+      Passage(passage.row + 1, passage.col)  // Down
+    )
+
+    val bridges = this.bridges.filter(bridge =>
+      (bridge.entrance1==passage)||(bridge.entrance2 == passage)
+    )
+
+    val bridgePassages = bridges.flatMap{bridge =>
+      if (bridge.entrance1 == passage) then {
+        List(bridge.entrance2)
+      } else {
+        List(bridge.entrance1)
+      }
+    }
+
+    (neighbors ++ bridgePassages).filter(validPassage)
+  }
+
+  private def validPassage(passage: Passage): Boolean =
+    (passage.row >= 0) && {passage.row < len && passage.col >= 0
+    } && (passage.col < wid && (hasPassage(passage)) || (hasBridge(passage, passage)))
 
   def updateHighScore(player: String, timeTaken: Int): Unit =
     highscore = (player, timeTaken)
@@ -82,7 +80,11 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
   def hasBridge(cell1: Cell, cell2: Cell): Boolean =
     bridges.exists(b => (b.entrance1 == cell1 && b.entrance2 == cell2) || (b.entrance1 == cell2 && b.entrance2 == cell1))
 
-  def possibleMoves(cell: Cell): List[Cell] = {
+}
+
+
+
+ /* def possibleMoves(cell: Cell): List[Cell] = {
     val neighbors = List(
       Cell(cell.row, cell.col - 1), // Left
       Cell(cell.row, cell.col + 1), // Right
@@ -96,4 +98,4 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
   private def validMove(cell: Cell): Boolean =
     cell.row >= 0 && cell.row < len && cell.col >= 0 && cell.col < wid && (hasPassage(cell) || hasBridge(cell, cell))
 
-}
+}*/
