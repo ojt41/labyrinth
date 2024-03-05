@@ -8,10 +8,8 @@ object MazeGenerator {
     val stack = mutable.Stack[Cell]()
     val rand = new Random()
 
-    // Set the starting point to the middle
-    val startRow = rows / 2
-    val startCol = cols / 2
-    val startCell = Cell(startRow, startCol)
+    // Set the starting point to the bottom right corner
+    val startCell = Cell(rows - 1, cols - 1)
 
     def markVisited(cell: Cell): Unit = {
       grid(cell.row)(cell.col) = true
@@ -49,10 +47,12 @@ object MazeGenerator {
 
     generate(startCell)
 
-    // Open the exit at the bottom right
-    grid(rows - 1)(cols - 2) = true
-    grid(rows - 2)(cols - 1) = true
-    grid(rows - 1)(cols - 1) = true
+    // Open the exit at the middle
+    val middleRow = rows / 2
+    val middleCol = cols / 2
+    grid(middleRow)(middleCol - 1) = true
+    grid(middleRow)(middleCol) = true
+    grid(middleRow - 1)(middleCol) = true
 
     grid
   }
