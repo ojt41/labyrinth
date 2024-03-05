@@ -6,6 +6,8 @@ import scalafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
 import scalafx.Includes._
 import scalafx.scene.input.KeyCode
+import scalafx.scene.control.Alert
+import scalafx.scene.control.Alert.AlertType
 
 object MazeGUI extends JFXApp3 {
 
@@ -14,7 +16,7 @@ object MazeGUI extends JFXApp3 {
   println("Enter width: ")
   val mazeWid = scala.io.StdIn.readInt()
 
-  val game = new Game(new Rat(Passage( length/2, mazeWid/2)), new Timer, new Storage)
+  val game = new Game(new Rat(Passage(length / 2, mazeWid / 2)), new Timer, new Storage)
   val maze = game.newMaze(length, mazeWid)
   val rat = game.rat
   game.startGame(maze)
@@ -23,6 +25,14 @@ object MazeGUI extends JFXApp3 {
 
   def solveAndHighlight(): Unit = {
     solution = maze.solveMaze(rat)
+  }
+
+  def showVictoryMessage(): Unit = {
+    val alert = new Alert(AlertType.Information)
+    alert.title = "Congratulations!"
+    alert.headerText = "Victory!"
+    alert.contentText = "You have reached the exit. Congratulations on solving the maze!"
+    alert.showAndWait()
   }
 
   override def start(): Unit = {
@@ -95,6 +105,11 @@ object MazeGUI extends JFXApp3 {
         }
         case _ =>
       }
+
+      if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1)) {
+        showVictoryMessage()
+      }
+
       drawMaze()
     }
 
@@ -110,7 +125,7 @@ object MazeGUI extends JFXApp3 {
     root.center = canvas
 
     val mainScene = new Scene(
-root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
+      root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
 
     stage = new JFXApp3.PrimaryStage {
       title = "Maze Game"
