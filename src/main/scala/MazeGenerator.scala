@@ -46,7 +46,6 @@ object MazeGenerator {
 
     generate(startCell)
 
-    // Open the exit at the middle
     val middleRow = rows / 2
     val middleCol = cols / 2
     grid(middleRow)(middleCol - 1) = true

@@ -4,9 +4,8 @@
       val possibleNeighbors = List(
         (row - distance, col), // Top
         (row + distance, col), // Bottom
-        (row, col - distance), // Left
-        (row, col + distance)  // Right
-      )
+        (row, col - distance), //Left
+        (row, col + distance)  )// Right)
 
       possibleNeighbors
         .filter { case (r, c) =>

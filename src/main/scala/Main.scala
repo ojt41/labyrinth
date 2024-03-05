@@ -135,7 +135,7 @@ object MazeGUI extends JFXApp3 {
         }
         case KeyCode.Right => {
           if (!timerRunning) {
-            startTime = System.nanoTime()
+           startTime = System.nanoTime()
             timerRunning = true
             timer.start()
           }
@@ -154,6 +154,7 @@ object MazeGUI extends JFXApp3 {
           solveAndHighlight()
         }
         case _ =>
+          timerRunning = true
       }
 
       if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1)) {
