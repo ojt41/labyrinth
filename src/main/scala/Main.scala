@@ -97,8 +97,7 @@ object MazeGUI extends JFXApp3 {
         }
       }
 
-      // Draw timer
-      gc.setStroke(Color.White)
+      gc.setStroke(Color.DarkMagenta)
       gc.setLineWidth(1)
       gc.strokeText(s"Time: ${elapsedTime / 1e9} seconds", 10, canvasHeight - 10)
     }
