@@ -9,18 +9,17 @@ import scalafx.scene.input.KeyCode
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
 import scalafx.animation.AnimationTimer
+import scalafx.scene.control.TextInputDialog
 
 object MazeGUI extends JFXApp3 {
 
-  println("Enter Length: ")
-  val length = scala.io.StdIn.readInt()
-  println("Enter width: ")
-  val mazeWid = scala.io.StdIn.readInt()
+  var length: Int = _
+  var mazeWid: Int = _
 
   val game = new Game(new Rat(Passage(length / 2, mazeWid / 2)), new Timer, new Storage)
-  val maze = game.newMaze(length, mazeWid)
-  val rat = game.rat
-  game.startGame(maze)
+  var maze: Maze = _
+  var rat: Rat = _
+
   var highlightSolution: Boolean = false
   var solution: Array[Passage] = Array.empty
 
@@ -36,7 +35,7 @@ object MazeGUI extends JFXApp3 {
     val alert = new Alert(AlertType.Information)
     alert.title = "Congratulations!"
     alert.headerText = "Victory!"
-    alert.contentText = s"You have reached the exit in ${elapsedTime / 1e9} seconds. Congratulations on solving the maze!"
+    alert.contentText = s"You have reached the exit in ${elapsedTime/ 1e9} seconds. Congratulations on solving the maze!"
     alert.showAndWait()
   }
 
@@ -47,6 +46,33 @@ object MazeGUI extends JFXApp3 {
   })
 
   override def start(): Unit = {
+    val dialogLength = new TextInputDialog() {
+      title = "Enter Length"
+      headerText = "Enter the length of maze:"
+    }
+
+    val dialogWidth = new TextInputDialog() {
+      title = "Enter Width"
+      headerText = "Enter the width of the maze:"
+    }
+
+    val lengthResult = dialogLength.showAndWait()
+    val widthResult = dialogWidth.showAndWait()
+
+    length = lengthResult match {
+      case Some(input) => input.toInt
+      case None => 30
+    }
+
+    mazeWid = widthResult match {
+      case Some(input) => input.toInt
+      case None => 30
+    }
+
+    maze = game.newMaze(length, mazeWid)
+    rat = game.rat
+    game.startGame(maze)
+
     val canvasWidth = maze.wid * 20
     val canvasHeight = maze.len * 20
 
@@ -85,7 +111,7 @@ object MazeGUI extends JFXApp3 {
         val x2 = entrance2.col * 20 + 10
         val y2 = entrance2.row * 20 + 10
 
-        if (highlightSolution && (solution.contains(entrance1)) && (solution.contains(entrance2)))then {
+        if (highlightSolution && (solution.contains(entrance1)) && (solution.contains(entrance2))) then {
           gc.setStroke(Color.Green)
         } else {
           gc.setStroke(Color.Red)
@@ -116,50 +142,44 @@ object MazeGUI extends JFXApp3 {
 
     canvas.onKeyPressed = (event: KeyEvent) => {
       event.code match {
-        case KeyCode.Up => {
+        case KeyCode.Up =>
           if (!timerRunning) {
             startTime = System.nanoTime()
             timerRunning = true
             timer.start()
           }
           rat.moveUp(maze)
-        }
-        case KeyCode.Down => {
+        case KeyCode.Down =>
           if (!timerRunning) {
             startTime = System.nanoTime()
             timerRunning = true
             timer.start()
           }
           rat.moveDown(maze)
-        }
-        case KeyCode.Left => {
+        case KeyCode.Left =>
           if (!timerRunning) {
             startTime = System.nanoTime()
             timerRunning = true
             timer.start()
           }
           rat.moveLeft(maze)
-        }
-        case KeyCode.Right => {
+        case KeyCode.Right =>
           if (!timerRunning) {
             startTime = System.nanoTime()
             timerRunning = true
             timer.start()
           }
           rat.moveRight(maze)
-        }
-        case KeyCode.Space => {
+        case KeyCode.Space =>
           if (!timerRunning) {
             startTime = System.nanoTime()
             timerRunning = true
             timer.start()
           }
           rat.moveToOtherEnd(maze)
-        }
-        case KeyCode.H => {
+        case KeyCode.H =>
           highlightSolution = true
           solveAndHighlight()
-        }
         case _ =>
           timerRunning = true
       }
@@ -174,11 +194,10 @@ object MazeGUI extends JFXApp3 {
     }
 
     canvas.onKeyReleased = (event: KeyEvent) => {
-      event.code match{
-        case KeyCode.H =>{
-          highlightSolution=false
+      event.code match {
+        case KeyCode.H =>
+          highlightSolution = false
           drawMaze()
-        }
         case _ =>
       }
     }
@@ -197,4 +216,3 @@ object MazeGUI extends JFXApp3 {
     }
   }
 }
-
