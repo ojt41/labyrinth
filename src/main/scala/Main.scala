@@ -60,11 +60,13 @@ object MazeGUI extends JFXApp3 {
     val widthResult = dialogWidth.showAndWait()
 
     length = lengthResult match {
+      case Some("") => 30
       case Some(input) => input.toInt
       case None => 30
     }
 
     mazeWid = widthResult match {
+      case Some("") => 30
       case Some(input) => input.toInt
       case None => 30
     }
