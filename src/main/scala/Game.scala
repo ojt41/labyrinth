@@ -1,7 +1,7 @@
 import scala.collection.mutable
 import scala.util.Random
 
-class Game(val rat: Rat, val timer: Timer, val storage: Storage ) {
+class Game(val rat: Rat, val storage: Storage ) {
 
   def newMaze(len: Int, wid: Int): Maze = {
     val rows = len
@@ -70,7 +70,7 @@ class Game(val rat: Rat, val timer: Timer, val storage: Storage ) {
 }
 
 object hello extends App:
-  val hell = Game(new Rat(Passage(0,0)), new Timer, new Storage)
+  val hell = Game(new Rat(Passage(0,0)), new Storage)
 
   val newMaze = hell.newMaze(21, 22)
 

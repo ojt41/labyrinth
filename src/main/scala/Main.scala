@@ -8,15 +8,15 @@ import scalafx.Includes._
 import scalafx.scene.input.KeyCode
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
-import scalafx.animation.AnimationTimer
 import scalafx.scene.control.TextInputDialog
+
 
 object MazeGUI extends JFXApp3 {
 
   var length: Int = _
   var mazeWid: Int = _
 
-  val game = new Game(new Rat(Passage(length / 2, mazeWid / 2)), new Timer, new Storage)
+  val game = new Game(new Rat(Passage(length / 2, mazeWid / 2)), new Storage)
   var maze: Maze = _
   var rat: Rat = _
 
@@ -32,8 +32,8 @@ object MazeGUI extends JFXApp3 {
 
   def showVictoryMessage(): Unit = {
     val alert = new Alert(AlertType.Information)
-    alert.title = "Congratulations!"
-    alert.headerText = "Victory!"
+    alert.title = if (!helpUsed) then "Congratulations!" else "Game Over"
+    alert.headerText = if (!helpUsed) then "Victory!" else "Try to solve the maze on your own."
     alert.contentText = if (!helpUsed) then (s"You have reached the exit in ${movesTaken} moves. Congratulations on solving the maze!") else ("You didn't solve the maze on your own.")
     alert.showAndWait()
   }
@@ -68,7 +68,7 @@ object MazeGUI extends JFXApp3 {
     rat = game.rat
     game.startGame(maze)
 
-    val scaleFactor = 800 / ((mazeWid + length)/2) // Calculate scaling factor based on maze dimensions
+    val scaleFactor = 800 / ((mazeWid + length)/2)
     val canvasWidth = scaleFactor * mazeWid
     val canvasHeight = scaleFactor * length
 
