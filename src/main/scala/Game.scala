@@ -69,7 +69,7 @@ class Game(val rat: Rat, val storage: Storage ) {
   }
 }
 
-object hello extends App:
+/*object hello extends App:
   val hell = Game(new Rat(Passage(0,0)), new Storage)
 
   val newMaze = hell.newMaze(21, 22)
@@ -80,3 +80,4 @@ object hello extends App:
   println(newMaze.passages.mkString("Array(", ", ", ")"))
   //newMaze.bridges.foreach(_.printBridge())
   println(newMaze.solveMaze(hell.rat).mkString("Array(", ", ", ")"))
+*/
