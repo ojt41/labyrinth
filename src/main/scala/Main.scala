@@ -34,7 +34,12 @@ object MazeGUI extends JFXApp3 {
     val alert = new Alert(AlertType.Information)
     alert.title = if (!helpUsed) then "Congratulations!" else "Game Over"
     alert.headerText = if (!helpUsed) then "Victory!" else "Try to solve the maze on your own."
-    alert.contentText = if (!helpUsed) then (s"You have reached the exit in ${movesTaken} moves. Congratulations on solving the maze!") else ("You didn't solve the maze on your own.")
+    
+    alert.contentText = 
+      if (!helpUsed) then 
+        (s"You have reached the exit in ${movesTaken} moves. Congratulations on solving the maze!") 
+      else 
+        ("You didn't solve the maze on your own.")
     alert.showAndWait()
   }
 

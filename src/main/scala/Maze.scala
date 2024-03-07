@@ -71,8 +71,8 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
     (passage.row >= 0) && {passage.row < len && passage.col >= 0
     } && (passage.col < wid && (hasPassage(passage)) || (hasBridge(passage, passage)))
 
-  def updateHighScore(player: String, timeTaken: Int): Unit =
-    highscore = (player, timeTaken)
+  def updateHighScore(player: String, movesTaken: Int): Unit =
+    highscore = (player, movesTaken)
 
   def hasPassage(cell: Cell): Boolean =
     passages.exists(p => p.row == cell.row && p.col == cell.col)

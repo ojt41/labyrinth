@@ -1,6 +1,4 @@
 class Storage {
-  def readMazeData(): Unit = ??? 
-  def writeMazeData(): Unit = ??? 
-  def saveHighscore(maze: Maze, score: Int): Unit = ??? 
-  def loadHighscore(maze: Maze): Int = ??? 
+  def readMazeData(fileName: String): Maze = ???
+  def writeMazeData(maze: Maze, fileName: String): Unit = ???
 }
