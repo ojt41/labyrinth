@@ -23,9 +23,7 @@ object MazeGUI extends JFXApp3 {
   var highlightSolution: Boolean = false
   var solution: Array[Passage] = Array.empty
 
-  var startTime: Long = 0
-  var elapsedTime: Long = 0
-  var timerRunning: Boolean = false
+
 
   def solveAndHighlight(): Unit = {
     solution = maze.solveMaze(rat)
@@ -35,15 +33,11 @@ object MazeGUI extends JFXApp3 {
     val alert = new Alert(AlertType.Information)
     alert.title = "Congratulations!"
     alert.headerText = "Victory!"
-    alert.contentText = s"You have reached the exit in ${elapsedTime/ 1e9} seconds. Congratulations on solving the maze!"
+    alert.contentText = s"You have reached the exit in seconds. Congratulations on solving the maze!"
     alert.showAndWait()
   }
 
-  val timer = AnimationTimer(time => {
-    if (timerRunning) {
-      elapsedTime = time - startTime
-    }
-  })
+
 
   override def start(): Unit = {
     val dialogLength = new TextInputDialog() {
@@ -134,7 +128,7 @@ object MazeGUI extends JFXApp3 {
 
       gc.setStroke(Color.DarkMagenta)
       gc.setLineWidth(1)
-      gc.strokeText(s"Time: ${elapsedTime / 1e9} seconds", 10, canvasHeight - 10)
+      gc.strokeText(s"Time: seconds", 10, canvasHeight - 10)
     }
 
     drawMaze()
@@ -145,50 +139,27 @@ object MazeGUI extends JFXApp3 {
     canvas.onKeyPressed = (event: KeyEvent) => {
       event.code match {
         case KeyCode.Up =>
-          if (!timerRunning) {
-            startTime = System.nanoTime()
-            timerRunning = true
-            timer.start()
-          }
           rat.moveUp(maze)
         case KeyCode.Down =>
-          if (!timerRunning) {
-            startTime = System.nanoTime()
-            timerRunning = true
-            timer.start()
-          }
+
           rat.moveDown(maze)
         case KeyCode.Left =>
-          if (!timerRunning) {
-            startTime = System.nanoTime()
-            timerRunning = true
-            timer.start()
-          }
+
           rat.moveLeft(maze)
         case KeyCode.Right =>
-          if (!timerRunning) {
-            startTime = System.nanoTime()
-            timerRunning = true
-            timer.start()
-          }
+
           rat.moveRight(maze)
         case KeyCode.Space =>
-          if (!timerRunning) {
-            startTime = System.nanoTime()
-            timerRunning = true
-            timer.start()
-          }
+
           rat.moveToOtherEnd(maze)
         case KeyCode.H =>
           highlightSolution = true
           solveAndHighlight()
         case _ =>
-          timerRunning = true
+
       }
 
       if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1)) {
-        timer.stop()
-        timerRunning = false
         showVictoryMessage()
       }
 
@@ -207,8 +178,7 @@ object MazeGUI extends JFXApp3 {
     val root = new BorderPane
     root.center = canvas
 
-    val mainScene = new Scene(
-      root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
+    val mainScene = new Scene(root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
 
     stage = new JFXApp3.PrimaryStage {
       title = "lost in maze"
