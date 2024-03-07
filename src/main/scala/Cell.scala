@@ -1,4 +1,6 @@
   case class Cell(row: Int, col: Int) {
+    override def toString: String = s"(${row},${col})"
+
     def neighbors(grid: Array[Array[Boolean]]): List[Cell] = {
       val distance = 2
       val possibleNeighbors = List(
