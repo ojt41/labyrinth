@@ -73,7 +73,7 @@ object MazeGUI extends JFXApp3 {
     rat = game.rat
     game.startGame(maze)
 
-    val scaleFactor = 800 / ((mazeWid + length)/2)
+    val scaleFactor = 600 / ((mazeWid + length)/2)
     val canvasWidth = scaleFactor * mazeWid
     val canvasHeight = scaleFactor * length
 
