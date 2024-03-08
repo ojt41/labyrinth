@@ -6,6 +6,13 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
 
   override def toString: String = s"$len, $wid created"
 
+  def passagesAsString(): String = this.passages.mkString("(", ", ", ")")
+
+  def wallsAsString(): String = this.walls.mkString("(", ", ", ")")
+
+  def bridgeAsString(): String = this.bridges.mkString("(", ", ", ")")
+
+
   def solveMaze(rat: Rat): Array[Passage] = {
     val start = rat.currentPos
     val end = Passage(this.len - 1, this.wid - 1)
