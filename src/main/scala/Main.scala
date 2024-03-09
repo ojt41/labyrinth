@@ -131,7 +131,7 @@ object MazeGUI extends JFXApp3 {
         }
       }
 
-      gc.setStroke(Color.DarkMagenta)
+      gc.setStroke(Color.SlateGrey)
       gc.setLineWidth(1)
       gc.strokeText(s"Moves: ${movesTaken}", scaleFactor / 2, canvasHeight - scaleFactor / 2)
     }
