@@ -19,7 +19,7 @@ class Storage:
       val dimensionsPattern = """Dimensions: (\d+),(\d+)""".r
       val passagesPattern = """Passages: \(\((.*)\)\)""".r
       val wallsPattern = """Walls: \(\((.*)\)\)""".r
-      val bridgesPattern = """Bridges: \(\((.*)\)\)""".r
+      val bridgesPattern = """Bridges: \((.*)\)""".r
       val highscorePattern = """Highscore: \((.*),(\d+)\)""".r
 
       val dimensions = mazeLines.collectFirst {case dimensionsPattern(len, wid)=> (len.toInt, wid.toInt)}
@@ -42,6 +42,8 @@ class Storage:
           wallsList
         }
       }
+
+      //mazeLines.collectFirst{case bridgesPattern(bridgesStr) => println(bridgesStr)}
 
       val bridges = mazeLines.collectFirst {
         case bridgesPattern(bridgesStr) =>
@@ -103,21 +105,21 @@ end Storage
 object testWrite extends App{
   val game = Game(new Rat(Passage(0,0)), new Storage)
 
-  val newMaze = game.newMaze(21, 22)
+  val newMaze = game.newMaze(20, 19)
   game.startGame(newMaze)
   println(newMaze)
   println(newMaze.highscore)
   println(newMaze.bridgeAsString())
   println(newMaze.wallsAsString())
   println(newMaze.passagesAsString())
-  game.storage.writeMazeData(newMaze, "storageWrite_testRun_8march.txt")
+  game.storage.writeMazeData(newMaze, "storageWrite_testRun_9march.txt")
 }
 
 
 object testRead extends App{
   val game = Game(new Rat(Passage(0,0)), new Storage)
   val mazegen = MazeGenerator
-  val newMaze = game.storage.readMazeData("storageWrite_testRun_8march.txt")
+  val newMaze = game.storage.readMazeData("storageWrite_testRun_9march.txt")
   game.startGame(newMaze)
   println(newMaze)
   println(newMaze.highscore)
