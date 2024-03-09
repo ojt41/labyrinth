@@ -9,7 +9,10 @@ import scalafx.scene.input.KeyCode
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.TextInputDialog
-
+import scala.util.Random
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.duration._
 
 object MazeGUI extends JFXApp3 {
 
@@ -19,6 +22,7 @@ object MazeGUI extends JFXApp3 {
   val game = new Game(new Rat(Passage(length / 2, mazeWid / 2)), new Storage)
   var maze: Maze = _
   var rat: Rat = _
+  var opponentRat: Rat = _
 
   var highlightSolution: Boolean = false
   var solution: Array[Passage] = Array.empty
@@ -33,12 +37,16 @@ object MazeGUI extends JFXApp3 {
   def showVictoryMessage(): Unit = {
     val alert = new Alert(AlertType.Information)
     alert.title = if (!helpUsed) then "Congratulations!" else "Game Over"
-    alert.headerText = if (!helpUsed) then "Victory!" else "Try to solve the maze on your own."
-    
-    alert.contentText = 
-      if (!helpUsed) then 
-        (s"You have reached the exit in ${movesTaken} moves. Congratulations on solving the maze!") 
-      else 
+    alert.headerText =
+      if (!helpUsed) then "Victory!"
+      else if (rat.currentPos == opponentRat.currentPos) then "You lost"
+      else "Try to solve the maze on your own."
+
+    alert.contentText =
+      if (!helpUsed) then
+        (s"You have reached the exit in ${movesTaken} moves. Congratulations on solving the maze!")
+      else if (rat.currentPos == opponentRat.currentPos) then "You were eleminated by the opponent"
+      else
         ("You didn't solve the maze on your own.")
     alert.showAndWait()
   }
@@ -73,6 +81,10 @@ object MazeGUI extends JFXApp3 {
     rat = game.rat
     game.startGame(maze)
 
+    //maze.passages.foreach(x => println(x.toString()))
+    val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
+    opponentRat = Rat(passageInRight)
+
     val scaleFactor = 600 / ((mazeWid + length)/2)
     val canvasWidth = scaleFactor * mazeWid
     val canvasHeight = scaleFactor * length
@@ -100,6 +112,11 @@ object MazeGUI extends JFXApp3 {
       val endX = mazeWid * scaleFactor - scaleFactor
       val endY = length * scaleFactor - scaleFactor
       gc.fillRect(endX, endY, scaleFactor, scaleFactor)
+
+      gc.fill = Color.Red // enenmy
+      val opponentRatX = opponentRat.currentPos.col * scaleFactor
+      val opponentRatY = opponentRat.currentPos.row * scaleFactor
+      gc.fillRect(opponentRatX, opponentRatY, scaleFactor, scaleFactor)
 
       gc.setStroke(Color.Red)
       gc.setLineWidth(3)
@@ -167,7 +184,14 @@ object MazeGUI extends JFXApp3 {
 
       if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1)) {
         showVictoryMessage()
+        start()
       }
+      else if (rat.currentPos == opponentRat.currentPos) {
+        showVictoryMessage()
+        start()
+
+      }
+
 
       drawMaze()
     }
@@ -179,6 +203,31 @@ object MazeGUI extends JFXApp3 {
           drawMaze()
         case _ =>
       }
+    }
+
+    def moveOpponentRat(): Unit = {
+      val randomDirection = Random.nextInt(4)
+      randomDirection match {
+        case 0 => opponentRat.moveUp(maze)
+        case 1 => opponentRat.moveDown(maze)
+        case 2 => opponentRat.moveLeft(maze)
+        case 3 => opponentRat.moveRight(maze)
+      }
+    }
+
+    val opponentRatMoveTask = new Runnable {
+      def run(): Unit =
+        moveOpponentRat()
+        drawMaze()
+    }
+
+    val opponentRatMoveTimer = Future {
+      val time = 200 // this is time in ms
+      while (rat.currentPos != opponentRat.currentPos && rat.currentPos != Passage(maze.len - 1, maze.wid - 1)) {
+        opponentRatMoveTask.run()
+        Thread.sleep(time) // delay of val time milliseconds, value set at 200 ms so 5 moves a second.
+      }
+      game.endGame(maze)
     }
 
     val root = new BorderPane
