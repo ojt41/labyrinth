@@ -24,13 +24,30 @@ class Storage {
 // val walls: Array[Wall],  val bridges: Array[Bridge],
 // var highscore: (String, Int) = ("Not solved", 99999))
 
-object tests extends App{
-  val hell = Game(new Rat(Passage(0,0)), new Storage)
+object testWrite extends App{
+  val game = Game(new Rat(Passage(0,0)), new Storage)
 
-  val newMaze = hell.newMaze(21, 22)
-  hell.startGame(newMaze)
-  hell.storage.writeMazeData(newMaze, "storageWrite_testRun_8march.txt")
+  val newMaze = game.newMaze(21, 22)
+  game.startGame(newMaze)
+  println(newMaze)
+  println(newMaze.highscore)
+  println(newMaze.bridgeAsString())
+  println(newMaze.wallsAsString())
+  println(newMaze.passagesAsString())
+  game.storage.writeMazeData(newMaze, "storageWrite_testRun_8march.txt")
+}
 
+
+object testRead extends App{
+  val game = Game(new Rat(Passage(0,0)), new Storage)
+  val mazegen = MazeGenerator
+  val newMaze = game.storage.readMazeData("storageWrite_testRun_8march.txt")
+  game.startGame(newMaze)
+  println(newMaze)
+  println(newMaze.highscore)
+  println(newMaze.bridgeAsString())
+  println(newMaze.wallsAsString())
+  println(newMaze.passagesAsString())
 
 }
 
