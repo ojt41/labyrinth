@@ -206,15 +206,20 @@ object MazeGUI extends JFXApp3 {
       }
     }
 
+    var lastOpponentRatMove: Passage = opponentRat.currentPos
+
     def moveOpponentRat(): Unit = {
-      val randomDirection = Random.nextInt(4)
-      randomDirection match {
-        case 0 => opponentRat.moveUp(maze)
-        case 1 => opponentRat.moveDown(maze)
-        case 2 => opponentRat.moveLeft(maze)
-        case 3 => opponentRat.moveRight(maze)
+      val possibleMoves = maze.possiblePassages(opponentRat.currentPos)
+      val validMoves = possibleMoves.filter(maze.validPassage)
+        .filter(_ != lastOpponentRatMove) // Exclude last move
+
+      if (validMoves.nonEmpty) {
+        val newOpponentRatPos = validMoves(Random.nextInt(validMoves.length))
+        lastOpponentRatMove = opponentRat.currentPos
+        opponentRat.currentPos = newOpponentRatPos
       }
     }
+
 
     val opponentRatMoveTask = new Runnable {
       def run(): Unit =

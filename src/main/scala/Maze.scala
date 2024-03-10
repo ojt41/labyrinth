@@ -73,7 +73,7 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
     (neighbors ++ bridgePassages).filter(validPassage)
   }
 
-  private def validPassage(passage: Passage): Boolean =
+  def validPassage(passage: Passage): Boolean =
     (passage.row >= 0) && {passage.row < len && passage.col >= 0
     } && (passage.col < wid && (hasPassage(passage)) || (hasBridge(passage, passage)))
 
