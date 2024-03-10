@@ -118,7 +118,8 @@ object MazeGUI extends JFXApp3 {
       val opponentRatY = opponentRat.currentPos.row * scaleFactor
       gc.fillRect(opponentRatX, opponentRatY, scaleFactor, scaleFactor)
 
-      gc.setStroke(Color.Red)
+      val bridgeColor = Color.Blue
+      gc.setStroke(bridgeColor)
       gc.setLineWidth(3)
 
       maze.bridges.foreach { bridge =>
@@ -132,7 +133,7 @@ object MazeGUI extends JFXApp3 {
         if (highlightSolution && (solution.contains(entrance1)) && (solution.contains(entrance2))) {
           gc.setStroke(Color.Green)
         } else {
-          gc.setStroke(Color.Red)
+          gc.setStroke(bridgeColor)
         }
 
         gc.strokeLine(x1, y1, x2, y2)
