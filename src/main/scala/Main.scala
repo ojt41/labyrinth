@@ -38,16 +38,20 @@ object MazeGUI extends JFXApp3 {
     val alert = new Alert(AlertType.Information)
     alert.title = if (!helpUsed) then "Congratulations!" else "Game Over"
     alert.headerText =
-      if (!helpUsed) then "Victory!"
-      else if (rat.currentPos == opponentRat.currentPos) then "You lost"
-      else "Try to solve the maze on your own."
+      if (!helpUsed && !(rat.currentPos == opponentRat.currentPos)) then
+        "Victory!"
+      else if (rat.currentPos == opponentRat.currentPos) then
+        "You lost"
+      else
+        "Try to solve the maze on your own."
 
     alert.contentText =
-      if (!helpUsed) then
+      if (!helpUsed && !(rat.currentPos == opponentRat.currentPos)) then
         (s"You have reached the exit in ${movesTaken} moves. Congratulations on solving the maze!")
-      else if (rat.currentPos == opponentRat.currentPos) then "You were eleminated by the opponent"
+      else if (rat.currentPos == opponentRat.currentPos) then
+        "You were eleminated by the opponent"
       else
-        ("You didn't solve the maze on your own.")
+        "Good job! Try to solve the maze next time without using the hints."
     alert.showAndWait()
   }
 
@@ -218,6 +222,11 @@ object MazeGUI extends JFXApp3 {
         lastOpponentRatMove = opponentRat.currentPos
         opponentRat.currentPos = newOpponentRatPos
       }
+      if (possibleMoves.length == 1) {
+        val helper = Passage(opponentRat.currentPos.x, opponentRat.currentPos.y) // this makes a true copy of the currentPos
+        opponentRat.currentPos = lastOpponentRatMove
+        lastOpponentRatMove = helper
+      }
     }
 
 
@@ -228,7 +237,7 @@ object MazeGUI extends JFXApp3 {
     }
 
     val opponentRatMoveTimer = Future {
-      val time = 200 // this is time in ms
+      val time = 100 // this is time in ms
       while (rat.currentPos != opponentRat.currentPos && rat.currentPos != Passage(maze.len - 1, maze.wid - 1)) {
         opponentRatMoveTask.run()
         Thread.sleep(time) // delay of val time milliseconds, value set at 200 ms so 5 moves a second.
