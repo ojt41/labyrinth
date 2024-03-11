@@ -63,9 +63,9 @@ class Game(val rat: Rat, val storage: Storage ) {
     rat.currentPos = start
   }
 
-  def endGame(maze: Maze): Boolean = {
+  def endGame(maze: Maze, anotherRat: Rat): Boolean = {
     val end = Cell(maze.len - 1, maze.wid - 1)
-    rat.currentPos == end
+    rat.currentPos == end || anotherRat.currentPos == rat.currentPos
   }
 }
 

@@ -28,6 +28,7 @@ object MazeGUI extends JFXApp3 {
   var solution: Array[Passage] = Array.empty
 
   var helpUsed = false
+  var eliminated = false
   var movesTaken = 0
 
   def solveAndHighlight(): Unit = {
@@ -35,20 +36,30 @@ object MazeGUI extends JFXApp3 {
   }
 
   def showVictoryMessage(): Unit = {
+    println("show victory message")
+    if eliminated then println("it has been eliminated")
     val alert = new Alert(AlertType.Information)
-    alert.title = if (!helpUsed) then "Congratulations!" else "Game Over"
+    println(eliminated)
+    alert.title = if eliminated then
+      println("alert title activated")
+      "You lost"
+    else if (!helpUsed && !game.endGame(maze, opponentRat)) then
+      "Congratulations!"
+    else
+      "Game Over"
+
     alert.headerText =
-      if (!helpUsed && !(rat.currentPos == opponentRat.currentPos)) then
+      if (!helpUsed && !eliminated) then
         "Victory!"
-      else if (rat.currentPos == opponentRat.currentPos) then
+      else if (eliminated) then
         "You lost"
       else
         "Try to solve the maze on your own."
 
     alert.contentText =
-      if (!helpUsed && !(rat.currentPos == opponentRat.currentPos)) then
+      if (!helpUsed && !eliminated) then
         (s"You have reached the exit in ${movesTaken} moves. Congratulations on solving the maze!")
-      else if (rat.currentPos == opponentRat.currentPos) then
+      else if (eliminated) then
         "You were eleminated by the opponent"
       else
         "Good job! Try to solve the maze next time without using the hints."
@@ -56,6 +67,10 @@ object MazeGUI extends JFXApp3 {
   }
 
   override def start(): Unit = {
+    eliminated = false
+    helpUsed = false
+    movesTaken = 0
+
     val dialogLength = new TextInputDialog() {
       title = "Enter Length"
       headerText = "Enter the length of maze:"
@@ -89,7 +104,7 @@ object MazeGUI extends JFXApp3 {
     val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
     opponentRat = Rat(passageInRight)
 
-    val scaleFactor = 600 / ((mazeWid + length)/2)
+    val scaleFactor = 700 / ((mazeWid + length)/2)
     val canvasWidth = scaleFactor * mazeWid
     val canvasHeight = scaleFactor * length
 
@@ -187,17 +202,16 @@ object MazeGUI extends JFXApp3 {
         case _ =>
       }
 
-      if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1)) {
+      if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1) || eliminated) {
         showVictoryMessage()
         start()
       }
-      else if (rat.currentPos == opponentRat.currentPos) {
+      if (rat.currentPos == opponentRat.currentPos) {
+        eliminated = true
+        println("condition met")
         showVictoryMessage()
         start()
-
       }
-
-
       drawMaze()
     }
 
@@ -240,9 +254,20 @@ object MazeGUI extends JFXApp3 {
       val time = 100 // this is time in ms
       while (rat.currentPos != opponentRat.currentPos && rat.currentPos != Passage(maze.len - 1, maze.wid - 1)) {
         opponentRatMoveTask.run()
+        if (rat.currentPos == opponentRat.currentPos) {
+          eliminated = true
+          println("within while loop")
+          showVictoryMessage()
+          MazeGUI.start()
+      }
         Thread.sleep(time) // delay of val time milliseconds, value set at 200 ms so 5 moves a second.
       }
-      game.endGame(maze)
+      eliminated = true
+      println("hello")
+      println(rat.currentPos)
+      println(opponentRat.currentPos)
+      showVictoryMessage()
+      game.endGame(maze, opponentRat)
     }
 
     val root = new BorderPane
