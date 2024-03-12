@@ -40,6 +40,36 @@ object MazeGUI extends JFXApp3 {
     solution = maze.solveMaze(rat)
   }
 
+  def showSaveMaze(maze: Maze): Unit = {
+      val saveDialog = new TextInputDialog() {
+            title = "Save Maze"
+            headerText = "Enter a filename to save the maze:"
+      }
+      val saveResult = saveDialog.showAndWait()
+      saveResult match {
+        case Some("") =>
+
+        case Some(filename) =>
+        game.storage.writeMazeData(maze, filename)
+        println(s"Maze saved to: $filename")
+
+        case None =>
+     }
+  }
+    def askForUserName(maze: Maze): Unit = {
+      val giveName = new TextInputDialog() {
+            title = "Username"
+            headerText = "Enter a username for this highscore"
+      }
+      val saveResult = giveName.showAndWait()
+      saveResult match {
+        case Some(str: String) =>
+        maze.highscore = (str, movesTaken)
+        case _ =>
+
+     }
+  }
+
   def showVictoryMessage(): Unit = {
     spamKKey()
     println("show victory message")
@@ -47,7 +77,6 @@ object MazeGUI extends JFXApp3 {
     val alert = new Alert(AlertType.Information)
     println(eliminated)
     alert.title = if eliminated then
-      println("alert title activated")
       "You lost"
     else if (!helpUsed && !game.endGame(maze, opponentRat)) then
       "Congratulations!"
@@ -63,13 +92,18 @@ object MazeGUI extends JFXApp3 {
         "Try to solve the maze on your own."
 
     alert.contentText =
-      if (!helpUsed && !eliminated) then
+      if (!helpUsed && !eliminated && maze.highscore._2 > movesTaken) then
+        askForUserName(maze)
+        (s"You have reached the exit in ${movesTaken} moves. You have beaten the highscore ${maze.highscore._1}.")
+      else if (!helpUsed && !eliminated) then
         (s"You have reached the exit in ${movesTaken} moves. Congratulations on solving the maze!")
+
       else if (eliminated) then
         "You were eleminated by the opponent"
       else
         "Good job! Try to solve the maze next time without using the hints."
     alert.showAndWait()
+    showSaveMaze(maze)
   }
 
   def spamKKey(): Future[Unit] = Future {
