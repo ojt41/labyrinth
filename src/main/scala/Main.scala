@@ -12,9 +12,14 @@ import scalafx.scene.control.TextInputDialog
 import scala.util.Random
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import java.awt.Robot
+import java.awt.event.KeyEvent
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 object MazeGUI extends JFXApp3 {
+  val robot = new Robot()
 
   var length: Int = _
   var mazeWid: Int = _
@@ -36,6 +41,7 @@ object MazeGUI extends JFXApp3 {
   }
 
   def showVictoryMessage(): Unit = {
+    spamKKey()
     println("show victory message")
     if eliminated then println("it has been eliminated")
     val alert = new Alert(AlertType.Information)
@@ -64,6 +70,15 @@ object MazeGUI extends JFXApp3 {
       else
         "Good job! Try to solve the maze next time without using the hints."
     alert.showAndWait()
+  }
+
+  def spamKKey(): Future[Unit] = Future {
+    {
+      robot.keyPress(java.awt.event.KeyEvent.VK_CAPS_LOCK)
+      robot.keyRelease(java.awt.event.KeyEvent.VK_CAPS_LOCK)
+      robot.keyPress(java.awt.event.KeyEvent.VK_CAPS_LOCK)
+      robot.keyRelease(java.awt.event.KeyEvent.VK_CAPS_LOCK)
+    }
   }
 
   override def start(): Unit = {
@@ -99,6 +114,8 @@ object MazeGUI extends JFXApp3 {
     maze = game.newMaze(length, mazeWid)
     rat = game.rat
     game.startGame(maze)
+    spamKKey()
+
 
     //maze.passages.foreach(x => println(x.toString()))
     val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
@@ -178,7 +195,7 @@ object MazeGUI extends JFXApp3 {
     canvas.requestFocus()
     canvas.focusTraversable = true
 
-    canvas.onKeyPressed = (event: KeyEvent) => {
+    canvas.onKeyPressed = (event: scalafx.scene.input.KeyEvent) => {
       event.code match {
         case KeyCode.Up =>
           rat.moveUp(maze)
@@ -200,6 +217,9 @@ object MazeGUI extends JFXApp3 {
           helpUsed = true
           solveAndHighlight()
         case _ =>
+          if eliminated then
+            showVictoryMessage()
+            start()
       }
 
       if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1) || eliminated) {
@@ -215,7 +235,7 @@ object MazeGUI extends JFXApp3 {
       drawMaze()
     }
 
-    canvas.onKeyReleased = (event: KeyEvent) => {
+    canvas.onKeyReleased = (event: scalafx.scene.input.KeyEvent) => {
       event.code match {
         case KeyCode.H =>
           highlightSolution = false
@@ -251,7 +271,7 @@ object MazeGUI extends JFXApp3 {
     }
 
     val opponentRatMoveTimer = Future {
-      val time = 100 // this is time in ms
+      val time = 400   // this is time in ms
       while (rat.currentPos != opponentRat.currentPos && rat.currentPos != Passage(maze.len - 1, maze.wid - 1)) {
         opponentRatMoveTask.run()
         if (rat.currentPos == opponentRat.currentPos) {
