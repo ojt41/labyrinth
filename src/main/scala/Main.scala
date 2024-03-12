@@ -43,7 +43,7 @@ object MazeGUI extends JFXApp3 {
   def showSaveMaze(maze: Maze): Unit = {
       val saveDialog = new TextInputDialog() {
             title = "Save Maze"
-            headerText = "Enter a filename to save the maze:"
+            headerText = "Enter a filename if you want to save this maze:"
       }
       val saveResult = saveDialog.showAndWait()
       saveResult match {
