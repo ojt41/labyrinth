@@ -14,6 +14,10 @@ import java.awt.event.KeyEvent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Random
+import scalafx.Includes._
+import scalafx.scene.input.ScrollEvent
+
+
 
 
 object MazeGUI extends JFXApp3 {
@@ -187,7 +191,8 @@ object MazeGUI extends JFXApp3 {
         val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
         opponentRat = Rat(passageInRight)
 
-        val scaleFactor = 700 / ((mazeWid + length) / 2)
+        val maxLength = math.max(mazeWid, length)
+        val scaleFactor = 800 / maxLength
         val canvasWidth = scaleFactor * mazeWid
         val canvasHeight = scaleFactor * length
 
@@ -363,8 +368,8 @@ object MazeGUI extends JFXApp3 {
 
         stage = new JFXApp3.PrimaryStage {
           title = "lost in maze"
-          width = canvasWidth + scaleFactor
-          height = canvasHeight + scaleFactor * 5
+          width = canvasWidth max 800
+          height = canvasHeight max 800
           scene = mainScene
         }
   }
