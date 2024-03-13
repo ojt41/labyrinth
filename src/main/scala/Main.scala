@@ -9,14 +9,16 @@ import scalafx.scene.input.KeyCode
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.TextInputDialog
+import scalafx.stage.FileChooser
 import scala.util.Random
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import java.awt.Robot
 import java.awt.event.KeyEvent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
 
 object MazeGUI extends JFXApp3 {
   val robot = new Robot()
@@ -41,33 +43,47 @@ object MazeGUI extends JFXApp3 {
   }
 
   def showSaveMaze(maze: Maze): Unit = {
-      val saveDialog = new TextInputDialog() {
-            title = "Save Maze"
-            headerText = "Enter a filename if you want to save this maze:"
-      }
-      val saveResult = saveDialog.showAndWait()
-      saveResult match {
-        case Some("") =>
+    val saveDialog = new TextInputDialog() {
+      title = "Save Maze"
+      headerText = "Enter a filename if you want to save this maze:"
+    }
+    val saveResult = saveDialog.showAndWait()
+    saveResult match {
+      case Some("") =>
 
-        case Some(filename) =>
+      case Some(filename) =>
         game.storage.writeMazeData(maze, filename)
         println(s"Maze saved to: $filename")
 
-        case None =>
-     }
+      case None =>
+    }
   }
-    def askForUserName(maze: Maze): Unit = {
-      val giveName = new TextInputDialog() {
-            title = "Username"
-            headerText = "Enter a username for this highscore"
-      }
-      val saveResult = giveName.showAndWait()
-      saveResult match {
-        case Some(str: String) =>
-        maze.highscore = (str, movesTaken)
-        case _ =>
 
-     }
+  def askForUserName(maze: Maze): Unit = {
+    val giveName = new TextInputDialog() {
+      title = "Username"
+      headerText = "Enter a username for this highscore"
+    }
+    val saveResult = giveName.showAndWait()
+    saveResult match {
+      case Some(str: String) =>
+        maze.highscore = (str, movesTaken)
+      case _ =>
+
+    }
+  }
+
+  def loadMaze(): Unit = {
+    val fileChooser = new FileChooser()
+    fileChooser.title = "Load Maze"
+    val selectedFile = fileChooser.showOpenDialog(stage)
+    if (selectedFile != null) {
+      maze = game.storage.readMazeData(selectedFile.getPath)
+      length = maze.len
+      mazeWid = maze.wid
+      rat = game.rat
+      game.startGame(maze)
+    }
   }
 
   def showVictoryMessage(): Unit = {
@@ -120,220 +136,236 @@ object MazeGUI extends JFXApp3 {
     helpUsed = false
     movesTaken = 0
 
-    val dialogLength = new TextInputDialog() {
-      title = "Enter Length"
-      headerText = "Enter the length of maze:"
+    val loadOrNewDialog = new Alert(AlertType.Confirmation) {
+      title = "Load or New Game"
+      headerText = "Do you want to load a game or start a new one?"
+      contentText = "Choose your option:"
+      buttonTypes = Seq(new javafx.scene.control.ButtonType("Load Game"), new javafx.scene.control.ButtonType("New Game"))
     }
 
-    val dialogWidth = new TextInputDialog() {
-      title = "Enter Width"
-      headerText = "Enter the width of the maze:"
+    val result = loadOrNewDialog.showAndWait()
+    result match {
+      case Some(loadGameButton) if loadGameButton.getText == "Load Game" =>{
+        loadMaze()
+      }
+      case _ => {
+        val dialogLength = new TextInputDialog() {
+          title = "Enter Length"
+          headerText = "Enter the length of maze:"
+        }
+
+        val dialogWidth = new TextInputDialog() {
+          title = "Enter Width"
+          headerText = "Enter the width of the maze:"
+        }
+
+        val lengthResult = dialogLength.showAndWait()
+        val widthResult = dialogWidth.showAndWait()
+
+        length = lengthResult match {
+          case Some("") => 30
+          case Some(input) => input.toInt
+          case None => 30
+        }
+
+        mazeWid = widthResult match {
+          case Some("") => 30
+          case Some(input) => input.toInt
+          case None => 30
+        }
+
+        maze = game.newMaze(length, mazeWid)
+        rat = game.rat
+        game.startGame(maze)
+        }
     }
 
-    val lengthResult = dialogLength.showAndWait()
-    val widthResult = dialogWidth.showAndWait()
-
-    length = lengthResult match {
-      case Some("") => 30
-      case Some(input) => input.toInt
-      case None => 30
-    }
-
-    mazeWid = widthResult match {
-      case Some("") => 30
-      case Some(input) => input.toInt
-      case None => 30
-    }
-
-    maze = game.newMaze(length, mazeWid)
-    rat = game.rat
-    game.startGame(maze)
-    spamKKey()
+        spamKKey()
 
 
     //maze.passages.foreach(x => println(x.toString()))
-    val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
-    opponentRat = Rat(passageInRight)
+        val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
+        opponentRat = Rat(passageInRight)
 
-    val scaleFactor = 700 / ((mazeWid + length)/2)
-    val canvasWidth = scaleFactor * mazeWid
-    val canvasHeight = scaleFactor * length
+        val scaleFactor = 700 / ((mazeWid + length) / 2)
+        val canvasWidth = scaleFactor * mazeWid
+        val canvasHeight = scaleFactor * length
 
-    val canvas = new Canvas(canvasWidth, canvasHeight)
-    val gc: GraphicsContext = canvas.graphicsContext2D
+        val canvas = new Canvas(canvasWidth, canvasHeight)
+        val gc: GraphicsContext = canvas.graphicsContext2D
 
-    def drawMaze(): Unit = {
-      gc.fill = Color.Black
-      gc.fillRect(0, 0, canvasWidth, canvasHeight)
+        def drawMaze(): Unit = {
+          gc.fill = Color.Black
+          gc.fillRect(0, 0, canvasWidth, canvasHeight)
 
-      gc.fill = Color.White
-      maze.passages.foreach { passage =>
-        val x = passage.col * scaleFactor
-        val y = passage.row * scaleFactor
-        gc.fillRect(x, y, scaleFactor, scaleFactor)
-      }
+          gc.fill = Color.White
+          maze.passages.foreach { passage =>
+            val x = passage.col * scaleFactor
+            val y = passage.row * scaleFactor
+            gc.fillRect(x, y, scaleFactor, scaleFactor)
+          }
 
-      gc.fill = Color.Blue // Rat color
-      val ratX = rat.currentPos.col * scaleFactor
-      val ratY = rat.currentPos.row * scaleFactor
-      gc.fillRect(ratX, ratY, scaleFactor, scaleFactor)
+          gc.fill = Color.Blue // Rat color
+          val ratX = rat.currentPos.col * scaleFactor
+          val ratY = rat.currentPos.row * scaleFactor
+          gc.fillRect(ratX, ratY, scaleFactor, scaleFactor)
 
-      gc.fill = Color.Green
-      val endX = mazeWid * scaleFactor - scaleFactor
-      val endY = length * scaleFactor - scaleFactor
-      gc.fillRect(endX, endY, scaleFactor, scaleFactor)
+          gc.fill = Color.Green
+          val endX = mazeWid * scaleFactor - scaleFactor
+          val endY = length * scaleFactor - scaleFactor
+          gc.fillRect(endX, endY, scaleFactor, scaleFactor)
 
-      gc.fill = Color.Red // enenmy
-      val opponentRatX = opponentRat.currentPos.col * scaleFactor
-      val opponentRatY = opponentRat.currentPos.row * scaleFactor
-      gc.fillRect(opponentRatX, opponentRatY, scaleFactor, scaleFactor)
+          gc.fill = Color.Red // enenmy
+          val opponentRatX = opponentRat.currentPos.col * scaleFactor
+          val opponentRatY = opponentRat.currentPos.row * scaleFactor
+          gc.fillRect(opponentRatX, opponentRatY, scaleFactor, scaleFactor)
 
-      val bridgeColor = Color.Blue
-      gc.setStroke(bridgeColor)
-      gc.setLineWidth(3)
-
-      maze.bridges.foreach { bridge =>
-        val entrance1 = bridge.entrance1
-        val entrance2 = bridge.entrance2
-        val x1 = entrance1.col * scaleFactor + scaleFactor / 2
-        val y1 = entrance1.row * scaleFactor + scaleFactor / 2
-        val x2 = entrance2.col * scaleFactor + scaleFactor / 2
-        val y2 = entrance2.row * scaleFactor + scaleFactor / 2
-
-        if (highlightSolution && (solution.contains(entrance1)) && (solution.contains(entrance2))) {
-          gc.setStroke(Color.Green)
-        } else {
+          val bridgeColor = Color.Blue
           gc.setStroke(bridgeColor)
+          gc.setLineWidth(3)
+
+          maze.bridges.foreach { bridge =>
+            val entrance1 = bridge.entrance1
+            val entrance2 = bridge.entrance2
+            val x1 = entrance1.col * scaleFactor + scaleFactor / 2
+            val y1 = entrance1.row * scaleFactor + scaleFactor / 2
+            val x2 = entrance2.col * scaleFactor + scaleFactor / 2
+            val y2 = entrance2.row * scaleFactor + scaleFactor / 2
+
+            if (highlightSolution && (solution.contains(entrance1)) && (solution.contains(entrance2))) {
+              gc.setStroke(Color.Green)
+            } else {
+              gc.setStroke(bridgeColor)
+            }
+
+            gc.strokeLine(x1, y1, x2, y2)
+          }
+
+          if (highlightSolution) {
+            gc.setStroke(Color.Green)
+            gc.setLineWidth(2)
+            solution.foreach { passage =>
+              val x = passage.col * scaleFactor + scaleFactor / 2
+              val y = passage.row * scaleFactor + scaleFactor / 2
+              gc.strokeOval(x, y, scaleFactor / 4, scaleFactor / 4)
+            }
+          }
+
+          gc.setStroke(Color.OrangeRed)
+          gc.setLineWidth(1)
+          gc.strokeText(s"Moves: ${movesTaken}", scaleFactor / 2, canvasHeight - scaleFactor / 2)
         }
 
-        gc.strokeLine(x1, y1, x2, y2)
-      }
+        drawMaze()
 
-      if (highlightSolution) {
-        gc.setStroke(Color.Green)
-        gc.setLineWidth(2)
-        solution.foreach { passage =>
-          val x = passage.col * scaleFactor + scaleFactor / 2
-          val y = passage.row * scaleFactor + scaleFactor / 2
-          gc.strokeOval(x, y, scaleFactor / 4, scaleFactor / 4)
-        }
-      }
+        canvas.requestFocus()
+        canvas.focusTraversable = true
 
-      gc.setStroke(Color.OrangeRed)
-      gc.setLineWidth(1)
-      gc.strokeText(s"Moves: ${movesTaken}", scaleFactor / 2, canvasHeight - scaleFactor / 2)
-    }
+        canvas.onKeyPressed = (event: scalafx.scene.input.KeyEvent) => {
+          event.code match {
+            case KeyCode.Up =>
+              rat.moveUp(maze)
+              movesTaken += 1
+            case KeyCode.Down =>
+              rat.moveDown(maze)
+              movesTaken += 1
+            case KeyCode.Left =>
+              rat.moveLeft(maze)
+              movesTaken += 1
+            case KeyCode.Right =>
+              rat.moveRight(maze)
+              movesTaken += 1
+            case KeyCode.Space =>
+              rat.moveToOtherEnd(maze)
+              movesTaken += 1
+            case KeyCode.H =>
+              highlightSolution = true
+              helpUsed = true
+              solveAndHighlight()
+            case _ =>
+              if eliminated then
+                showVictoryMessage()
+                start()
+          }
 
-    drawMaze()
-
-    canvas.requestFocus()
-    canvas.focusTraversable = true
-
-    canvas.onKeyPressed = (event: scalafx.scene.input.KeyEvent) => {
-      event.code match {
-        case KeyCode.Up =>
-          rat.moveUp(maze)
-          movesTaken += 1
-        case KeyCode.Down =>
-          rat.moveDown(maze)
-          movesTaken += 1
-        case KeyCode.Left =>
-          rat.moveLeft(maze)
-          movesTaken += 1
-        case KeyCode.Right =>
-          rat.moveRight(maze)
-          movesTaken += 1
-        case KeyCode.Space =>
-          rat.moveToOtherEnd(maze)
-          movesTaken += 1
-        case KeyCode.H =>
-          highlightSolution = true
-          helpUsed = true
-          solveAndHighlight()
-        case _ =>
-          if eliminated then
+          if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1) || eliminated) {
             showVictoryMessage()
             start()
-      }
-
-      if (rat.currentPos == Passage(maze.len - 1, maze.wid - 1) || eliminated) {
-        showVictoryMessage()
-        start()
-      }
-      if (rat.currentPos == opponentRat.currentPos) {
-        eliminated = true
-        println("condition met")
-        showVictoryMessage()
-        start()
-      }
-      drawMaze()
-    }
-
-    canvas.onKeyReleased = (event: scalafx.scene.input.KeyEvent) => {
-      event.code match {
-        case KeyCode.H =>
-          highlightSolution = false
+          }
+          if (rat.currentPos == opponentRat.currentPos) {
+            eliminated = true
+            println("condition met")
+            showVictoryMessage()
+            start()
+          }
           drawMaze()
-        case _ =>
-      }
-    }
+        }
 
-    var lastOpponentRatMove: Passage = opponentRat.currentPos
+        canvas.onKeyReleased = (event: scalafx.scene.input.KeyEvent) => {
+          event.code match {
+            case KeyCode.H =>
+              highlightSolution = false
+              drawMaze()
+            case _ =>
+          }
+        }
 
-    def moveOpponentRat(): Unit = {
-      val possibleMoves = maze.possiblePassages(opponentRat.currentPos)
-      val validMoves = possibleMoves.filter(maze.validPassage)
-        .filter(_ != lastOpponentRatMove) // Exclude last move
+        var lastOpponentRatMove: Passage = opponentRat.currentPos
 
-      if (validMoves.nonEmpty) {
-        val newOpponentRatPos = validMoves(Random.nextInt(validMoves.length))
-        lastOpponentRatMove = opponentRat.currentPos
-        opponentRat.currentPos = newOpponentRatPos
-      }
-      if (possibleMoves.length == 1) {
-        val helper = Passage(opponentRat.currentPos.x, opponentRat.currentPos.y) // this makes a true copy of the currentPos
-        opponentRat.currentPos = lastOpponentRatMove
-        lastOpponentRatMove = helper
-      }
-    }
+        def moveOpponentRat(): Unit = {
+          val possibleMoves = maze.possiblePassages(opponentRat.currentPos)
+          val validMoves = possibleMoves.filter(maze.validPassage)
+            .filter(_ != lastOpponentRatMove) // Exclude last move
+
+          if (validMoves.nonEmpty) {
+            val newOpponentRatPos = validMoves(Random.nextInt(validMoves.length))
+            lastOpponentRatMove = opponentRat.currentPos
+            opponentRat.currentPos = newOpponentRatPos
+          }
+          if (possibleMoves.length == 1) {
+            val helper = Passage(opponentRat.currentPos.x, opponentRat.currentPos.y) // this makes a true copy of the currentPos
+            opponentRat.currentPos = lastOpponentRatMove
+            lastOpponentRatMove = helper
+          }
+        }
 
 
-    val opponentRatMoveTask = new Runnable {
-      def run(): Unit =
-        moveOpponentRat()
-        drawMaze()
-    }
+        val opponentRatMoveTask = new Runnable {
+          def run(): Unit =
+            moveOpponentRat()
+            drawMaze()
+        }
 
-    val opponentRatMoveTimer = Future {
-      val time = 400   // this is time in ms
-      while (rat.currentPos != opponentRat.currentPos && rat.currentPos != Passage(maze.len - 1, maze.wid - 1)) {
-        opponentRatMoveTask.run()
-        if (rat.currentPos == opponentRat.currentPos) {
+        val opponentRatMoveTimer = Future {
+          val time = 400   // this is time in ms
+          while (rat.currentPos != opponentRat.currentPos && rat.currentPos != Passage(maze.len - 1, maze.wid - 1)) {
+            opponentRatMoveTask.run()
+            if (rat.currentPos == opponentRat.currentPos) {
+              eliminated = true
+              println("within while loop")
+              showVictoryMessage()
+              MazeGUI.start()
+          }
+            Thread.sleep(time) // delay of val time milliseconds, value set at 200 ms so 5 moves a second.
+          }
           eliminated = true
-          println("within while loop")
+          println("hello")
+          println(rat.currentPos)
+          println(opponentRat.currentPos)
           showVictoryMessage()
-          MazeGUI.start()
-      }
-        Thread.sleep(time) // delay of val time milliseconds, value set at 200 ms so 5 moves a second.
-      }
-      eliminated = true
-      println("hello")
-      println(rat.currentPos)
-      println(opponentRat.currentPos)
-      showVictoryMessage()
-      game.endGame(maze, opponentRat)
-    }
+          game.endGame(maze, opponentRat)
+        }
 
-    val root = new BorderPane
-    root.center = canvas
+        val root = new BorderPane
+        root.center = canvas
 
-    val mainScene = new Scene(root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
+        val mainScene = new Scene(root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
 
-    stage = new JFXApp3.PrimaryStage {
-      title = "lost in maze"
-      width = canvasWidth + scaleFactor
-      height = canvasHeight + scaleFactor * 5
-      scene = mainScene
-    }
+        stage = new JFXApp3.PrimaryStage {
+          title = "lost in maze"
+          width = canvasWidth + scaleFactor
+          height = canvasHeight + scaleFactor * 5
+          scene = mainScene
+        }
   }
 }
