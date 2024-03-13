@@ -1,7 +1,7 @@
 import scala.collection.mutable
 import scala.util.Random
 
-class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: Array[Wall],  val bridges: Array[Bridge], var highscore: (String, Int) = ("Not solved", 99999)) {
+class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: Array[Wall],  val bridges: Array[Bridge], var highscore: (String, Int) = ("Anonymous", 99999)) {
 
 
   override def toString: String = s"$len, $wid created"
