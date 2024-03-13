@@ -1,23 +1,19 @@
+import scalafx.Includes.*
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
-import scalafx.scene.input.KeyEvent
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.ButtonType.Close
+import scalafx.scene.control.{Alert, TextInputDialog}
+import scalafx.scene.input.{KeyCode, KeyEvent}
 import scalafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
-import scalafx.Includes._
-import scalafx.scene.input.KeyCode
-import scalafx.scene.control.Alert
-import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.TextInputDialog
 import scalafx.stage.FileChooser
-import scala.util.Random
-import scala.concurrent.Future
 import java.awt.Robot
 import java.awt.event.KeyEvent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Random
 
 
 object MazeGUI extends JFXApp3 {
@@ -140,7 +136,8 @@ object MazeGUI extends JFXApp3 {
       title = "Load or New Game"
       headerText = "Do you want to load a game or start a new one?"
       contentText = "Choose your option:"
-      buttonTypes = Seq(new javafx.scene.control.ButtonType("Load Game"), new javafx.scene.control.ButtonType("New Game"))
+      buttonTypes = Seq(new javafx.scene.control.ButtonType("Load Game"), new javafx.scene.control.ButtonType("New Game"),
+        javafx.scene.control.ButtonType.CLOSE)
     }
 
     val result = loadOrNewDialog.showAndWait()
@@ -148,6 +145,9 @@ object MazeGUI extends JFXApp3 {
       case Some(loadGameButton) if loadGameButton.getText == "Load Game" =>{
         loadMaze()
       }
+     case Some(Close) if Close.getText == "Close" =>
+        System.exit(0)
+
       case _ => {
         val dialogLength = new TextInputDialog() {
           title = "Enter Length"
