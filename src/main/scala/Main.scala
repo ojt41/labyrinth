@@ -106,11 +106,21 @@ object MazeGUI extends JFXApp3 {
     fileChooser.title = "Load Maze"
     val selectedFile = fileChooser.showOpenDialog(stage)
     if (selectedFile != null) {
+      try{
       maze = game.storage.readMazeData(selectedFile.getPath)
-      length = maze.len
-      mazeWid = maze.wid
-      rat = game.rat
-      game.startGame(maze)
+      }
+      catch
+        case e: Exception =>
+         val newallert = new Alert(AlertType.Error)
+         newallert.title = "Wrong format"
+         newallert.contentText = "Load a valid Maze file"
+         newallert.showAndWait()
+         loadMaze()
+     finally
+          length = maze.len
+          mazeWid = maze.wid
+          rat = game.rat
+          game.startGame(maze)
     }
   }
 
@@ -169,7 +179,7 @@ object MazeGUI extends JFXApp3 {
       title = "Main Menu"
       headerText = "Do you want to load a game or start a new one?"
       contentText = "Choose your option:"
-      buttonTypes = Seq(new javafx.scene.control.ButtonType("Load Game"), new javafx.scene.control.ButtonType("New Game"),
+      buttonTypes = Seq( new javafx.scene.control.ButtonType("New Game"),new javafx.scene.control.ButtonType("Load Game"),
         new javafx.scene.control.ButtonType("Instructions"),
         javafx.scene.control.ButtonType.CLOSE)
     }
