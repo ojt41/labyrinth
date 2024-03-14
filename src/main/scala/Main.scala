@@ -1,18 +1,21 @@
-import scalafx.Includes._
+import scalafx.Includes.*
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.ButtonType.Close
-import scalafx.scene.control.{Alert, TextInputDialog}
+import scalafx.scene.control.{Alert, TextArea, TextInputDialog}
 import scalafx.scene.input.{KeyCode, KeyEvent, MouseEvent, ScrollEvent}
 import scalafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
+import scalafx.scene.text.{Font, FontWeight}
 import scalafx.stage.FileChooser
+
 import java.awt.Robot
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Random
+
 
 object MazeGUI extends JFXApp3 {
   val robot = new Robot()
@@ -43,6 +46,26 @@ object MazeGUI extends JFXApp3 {
   var lastMouseY: Double = _
   var panOffsetX: Double = 0.0
   var panOffsetY: Double = 0.0
+
+  def showInstructions(): Unit = {
+    val instructionsTextArea = new TextArea {
+        text = Instructions.ins
+        editable = false
+        wrapText = true
+        prefWidth = 800
+        prefHeight = 600
+        font = scalafx.scene.text.Font.font("Calibri", FontWeight.Normal, 14)
+    }
+    val instructionsDialog = new Alert(AlertType.Information) {
+        title = "Instructions"
+        headerText = "Maze Game Instructions"
+        dialogPane().content = instructionsTextArea
+    }
+    val inputs = instructionsDialog.showAndWait()
+    inputs match
+      case _ =>
+        start()
+  }
 
   def solveAndHighlight(): Unit = {
     solution = maze.solveMaze(rat)
@@ -75,7 +98,6 @@ object MazeGUI extends JFXApp3 {
       case Some(str: String) =>
         maze.highscore = (str, movesTaken)
       case _ =>
-
     }
   }
 
@@ -128,6 +150,7 @@ object MazeGUI extends JFXApp3 {
     showSaveMaze(maze)
   }
 
+
   def spamKKey(): Future[Unit] = Future {
     {
       robot.keyPress(java.awt.event.KeyEvent.VK_CAPS_LOCK)
@@ -143,19 +166,24 @@ object MazeGUI extends JFXApp3 {
     movesTaken = 0
 
     val loadOrNewDialog = new Alert(AlertType.Confirmation) {
-      title = "Load or New Game"
+      title = "Main Menu"
       headerText = "Do you want to load a game or start a new one?"
       contentText = "Choose your option:"
       buttonTypes = Seq(new javafx.scene.control.ButtonType("Load Game"), new javafx.scene.control.ButtonType("New Game"),
+        new javafx.scene.control.ButtonType("Instructions"),
         javafx.scene.control.ButtonType.CLOSE)
     }
+
 
     val result = loadOrNewDialog.showAndWait()
     result match {
       case Some(loadGameButton) if loadGameButton.getText == "Load Game" =>{
         loadMaze()
       }
-     case Some(Close) if Close.getText == "Close" =>
+      case Some(instructions) if instructions.getText == "Instructions" => {
+        showInstructions()
+      }
+      case Some(Close) if Close.getText == "Close" =>
         System.exit(0)
 
       case _ => {
