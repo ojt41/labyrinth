@@ -267,7 +267,16 @@ object MazeGUI extends JFXApp3 {
       gc.strokeText(s"Moves: ${movesTaken}", scaleFactor / 2, canvasHeight - scaleFactor / 2)
     }
 
+
+
     drawMaze()
+
+
+    def resetZoom(): Unit = {
+      scaleFactor = 800 / maxLength
+      panOffsetX = 0.0
+      panOffsetY = 0.0
+    }
 
     canvas.requestFocus()
     canvas.focusTraversable = true
@@ -293,6 +302,9 @@ object MazeGUI extends JFXApp3 {
           highlightSolution = true
           helpUsed = true
           solveAndHighlight()
+        case KeyCode.R =>
+          resetZoom()
+          drawMaze()
         case _ =>
           if eliminated then
             showVictoryMessage()
@@ -391,7 +403,6 @@ object MazeGUI extends JFXApp3 {
     }
 
     canvas.onMouseDragged = (event: MouseEvent) => {
-      println("dragging")
       val deltaX = event.x - lastMouseX
       val deltaY = event.y - lastMouseY
 
