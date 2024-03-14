@@ -209,18 +209,8 @@ object MazeGUI extends JFXApp3 {
 
         val lengthResult = dialogLength.showAndWait()
         val widthResult = dialogWidth.showAndWait()
-
-        length = lengthResult match {
-          case Some("") => 30
-          case Some(input) => input.toInt
-          case None => 30
-        }
-
-        mazeWid = widthResult match {
-          case Some("") => 30
-          case Some(input) => input.toInt
-          case None => 30
-        }
+        DisplayMessages.lengthObtainer(lengthResult)
+        DisplayMessages.widthObtainer(widthResult)
 
         maze = game.newMaze(length, mazeWid)
         rat = game.rat
@@ -244,7 +234,6 @@ object MazeGUI extends JFXApp3 {
     gc = canvas.graphicsContext2D
 
     def drawMaze(): Unit = {
-      // Calculate the centering offsets
       val offsetX = (canvasWidth - mazeWid * scaleFactor) / 2
       val offsetY = (canvasHeight - length * scaleFactor) / 2
 
@@ -312,8 +301,8 @@ object MazeGUI extends JFXApp3 {
         gc.setStroke(Color.Green)
         gc.setLineWidth(2)
         solution.foreach { passage =>
-          val x = (passage.col + panOffsetX) * scaleFactor + scaleFactor / 2
-          val y = (passage.row + panOffsetY) * scaleFactor + scaleFactor / 2
+          val x = (passage.col + panOffsetX) * scaleFactor + scaleFactor / 2 + offsetX
+          val y = (passage.row + panOffsetY) * scaleFactor + scaleFactor / 2 + offsetY
           gc.strokeOval(x, y, scaleFactor / 4, scaleFactor / 4)
         }
       }
@@ -443,10 +432,10 @@ object MazeGUI extends JFXApp3 {
       val deltaY = event.deltaY
 
       if (deltaY < 0) {
-        // Zoom out
+        //Zoom out
         scaleFactor /= zoomFactor
       } else {
-        // Zoom in
+        //Zoom in
         scaleFactor *= zoomFactor
       }
 
