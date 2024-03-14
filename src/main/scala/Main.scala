@@ -5,20 +5,14 @@ import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.ButtonType.Close
 import scalafx.scene.control.{Alert, TextInputDialog}
-import scalafx.scene.input.{KeyCode, KeyEvent}
+import scalafx.scene.input.{KeyCode, KeyEvent, MouseEvent, ScrollEvent}
 import scalafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
 import scalafx.stage.FileChooser
 import java.awt.Robot
-import java.awt.event.KeyEvent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Random
-import scalafx.Includes._
-import scalafx.scene.input.ScrollEvent
-
-
-
 
 object MazeGUI extends JFXApp3 {
   val robot = new Robot()
@@ -39,8 +33,16 @@ object MazeGUI extends JFXApp3 {
   var movesTaken = 0
 
   var scaleFactor: Double = 1.0
-  val minScaleFactor: Double = 0.5
-  val maxScaleFactor: Double = 2.0
+
+  var canvasWidth: Double = _
+  var canvasHeight: Double = _
+  var canvas: Canvas = _
+  var gc: GraphicsContext = _
+
+  var lastMouseX: Double = _
+  var lastMouseY: Double = _
+  var panOffsetX: Double = 0.0
+  var panOffsetY: Double = 0.0
 
   def solveAndHighlight(): Unit = {
     solution = maze.solveMaze(rat)
@@ -197,11 +199,11 @@ object MazeGUI extends JFXApp3 {
 
     val maxLength = math.max(mazeWid, length)
     scaleFactor = 800 / maxLength
-    val canvasWidth = scaleFactor * mazeWid
-    val canvasHeight = scaleFactor * length
+    canvasWidth = scaleFactor * mazeWid
+    canvasHeight = scaleFactor * length
 
-    val canvas = new Canvas(canvasWidth, canvasHeight)
-    val gc: GraphicsContext = canvas.graphicsContext2D
+    canvas = new Canvas(canvasWidth, canvasHeight)
+    gc = canvas.graphicsContext2D
 
     def drawMaze(): Unit = {
       gc.fill = Color.Black
@@ -209,24 +211,24 @@ object MazeGUI extends JFXApp3 {
 
       gc.fill = Color.White
       maze.passages.foreach { passage =>
-        val x = passage.col * scaleFactor
-        val y = passage.row * scaleFactor
+        val x = (passage.col - panOffsetX) * scaleFactor
+        val y = (passage.row - panOffsetY) * scaleFactor
         gc.fillRect(x, y, scaleFactor, scaleFactor)
       }
 
       gc.fill = Color.Blue // Rat color
-      val ratX = rat.currentPos.col * scaleFactor
-      val ratY = rat.currentPos.row * scaleFactor
+      val ratX = (rat.currentPos.col - panOffsetX) * scaleFactor
+      val ratY = (rat.currentPos.row - panOffsetY) * scaleFactor
       gc.fillRect(ratX, ratY, scaleFactor, scaleFactor)
 
       gc.fill = Color.Green
-      val endX = mazeWid * scaleFactor - scaleFactor
-      val endY = length * scaleFactor - scaleFactor
+      val endX = (mazeWid - panOffsetX) * scaleFactor - scaleFactor
+      val endY = (length - panOffsetY) * scaleFactor - scaleFactor
       gc.fillRect(endX, endY, scaleFactor, scaleFactor)
 
       gc.fill = Color.Red // enenmy
-      val opponentRatX = opponentRat.currentPos.col * scaleFactor
-      val opponentRatY = opponentRat.currentPos.row * scaleFactor
+      val opponentRatX = (opponentRat.currentPos.col - panOffsetX) * scaleFactor
+      val opponentRatY = (opponentRat.currentPos.row - panOffsetY) * scaleFactor
       gc.fillRect(opponentRatX, opponentRatY, scaleFactor, scaleFactor)
 
       val bridgeColor = Color.Blue
@@ -236,10 +238,10 @@ object MazeGUI extends JFXApp3 {
       maze.bridges.foreach { bridge =>
         val entrance1 = bridge.entrance1
         val entrance2 = bridge.entrance2
-        val x1 = entrance1.col * scaleFactor + scaleFactor / 2
-        val y1 = entrance1.row * scaleFactor + scaleFactor / 2
-        val x2 = entrance2.col * scaleFactor + scaleFactor / 2
-        val y2 = entrance2.row * scaleFactor + scaleFactor / 2
+        val x1 = (entrance1.col - panOffsetX) * scaleFactor + scaleFactor / 2
+        val y1 = (entrance1.row - panOffsetY) * scaleFactor + scaleFactor / 2
+        val x2 = (entrance2.col - panOffsetX) * scaleFactor + scaleFactor / 2
+        val y2 = (entrance2.row - panOffsetY) * scaleFactor + scaleFactor / 2
 
         if (highlightSolution && (solution.contains(entrance1)) && (solution.contains(entrance2))) {
           gc.setStroke(Color.Green)
@@ -254,8 +256,8 @@ object MazeGUI extends JFXApp3 {
         gc.setStroke(Color.Green)
         gc.setLineWidth(2)
         solution.foreach { passage =>
-          val x = passage.col * scaleFactor + scaleFactor / 2
-          val y = passage.row * scaleFactor + scaleFactor / 2
+          val x = (passage.col - panOffsetX) * scaleFactor + scaleFactor / 2
+          val y = (passage.row - panOffsetY) * scaleFactor + scaleFactor / 2
           gc.strokeOval(x, y, scaleFactor / 4, scaleFactor / 4)
         }
       }
@@ -291,12 +293,6 @@ object MazeGUI extends JFXApp3 {
           highlightSolution = true
           helpUsed = true
           solveAndHighlight()
-        case KeyCode.B =>
-          scaleFactor = (scaleFactor + 0.1).max(maxScaleFactor)
-          drawMaze()
-        case KeyCode.S =>
-          scaleFactor = (scaleFactor - 0.1).max(minScaleFactor)
-          drawMaze()
         case _ =>
           if eliminated then
             showVictoryMessage()
@@ -369,6 +365,48 @@ object MazeGUI extends JFXApp3 {
       println(opponentRat.currentPos)
       showVictoryMessage()
       game.endGame(maze, opponentRat)
+    }
+
+
+
+    canvas.onScroll = (event: ScrollEvent) => {
+      val zoomFactor = 1.1
+      val deltaY = event.deltaY
+
+      if (deltaY < 0) {
+        // Zoom out
+        scaleFactor /= zoomFactor
+      } else {
+        // Zoom in
+        scaleFactor *= zoomFactor
+      }
+
+      drawMaze()
+      event.consume()
+    }
+
+    canvas.onMousePressed = (event: MouseEvent) => {
+      lastMouseX = event.x
+      lastMouseY = event.y
+    }
+
+    canvas.onMouseDragged = (event: MouseEvent) => {
+      println("dragging")
+      val deltaX = event.x - lastMouseX
+      val deltaY = event.y - lastMouseY
+
+      lastMouseX = event.x
+      lastMouseY = event.y
+
+      panOffsetX += deltaX / scaleFactor
+      panOffsetY += deltaY / scaleFactor
+
+      drawMaze()
+    }
+
+    canvas.onMouseReleased = (event: MouseEvent) => {
+      lastMouseX = event.x
+      lastMouseY = event.y
     }
 
     val root = new BorderPane
