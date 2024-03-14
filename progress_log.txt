@@ -1,0 +1,36 @@
+Interim Meeting 3
+
+1. Changed stack to queue in BFS solving. Bridges are now included in the shortest path.
+Addresses the issue raised by TA that bridges are not required for the gameplay.
+To get the highscore (minimize moves), bridges are essential.
+
+2. Storage class implemented with functions for reading and writing maze data. Writing was easy,
+Reading was quite challenging, after a lot of work, I decided to use Regex for reading mazes.
+
+3. Implemented AI in the game. To ensure it does not go back and forth in the same place,
+I programmed it in a way such that it does not go back to the previous passage. Except when
+only one move is available (dead end), where it goes back.
+
+4. Implented losing criteria (rat and opponent must be at the same spot)
+
+5. Problems with losing criteria, the rat would be able to make another move before game over
+text would appear. Fixed it by added a Robot clicker.
+
+6. Polished GUI. Implemented file explorer for loading files.
+
+7. Zooming added. This was quite hard to get zoomed about the center.
+
+8. Dragging added to ensure bigger mazes can be played easily.
+
+9. Added edge cases handling for wrong format files, inputs, etc.
+
+10. Refactored old code into smaller classes and objects.
+
+All of these changes have been tested by playing the game and tinkering the code for hours.
+
+The workload in the past week has been 40 hours.
+
+I am very comfortably quite ahead of what was planned. Planning on working on GUI updates
+and testing. Will think about starting with the documentation after TA has approved the design
+of the game.
+
