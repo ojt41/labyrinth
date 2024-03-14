@@ -199,8 +199,8 @@ object MazeGUI extends JFXApp3 {
 
     val maxLength = math.max(mazeWid, length)
     scaleFactor = 800 / maxLength
-    canvasWidth = scaleFactor * mazeWid
-    canvasHeight = scaleFactor * length
+    canvasWidth = 800 //scaleFactor * mazeWid
+    canvasHeight = 800 //scaleFactor * length
 
     canvas = new Canvas(canvasWidth, canvasHeight)
     gc = canvas.graphicsContext2D
@@ -422,6 +422,8 @@ object MazeGUI extends JFXApp3 {
 
     val root = new BorderPane
     root.center = canvas
+    //root.setCenter(canvas)
+
 
     val mainScene = new Scene(root, canvasWidth, canvasHeight, Color.rgb(20, 20, 20))
 
@@ -431,5 +433,7 @@ object MazeGUI extends JFXApp3 {
       height = canvasHeight max 800
       scene = mainScene
     }
+
+    //stage.centerOnScreen()
   }
 }
