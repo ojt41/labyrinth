@@ -10,7 +10,6 @@ import scalafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.stage.FileChooser
-
 import java.awt.Robot
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -54,7 +53,7 @@ object MazeGUI extends JFXApp3 {
         wrapText = true
         prefWidth = 800
         prefHeight = 600
-        font = scalafx.scene.text.Font.font("Calibri", FontWeight.Normal, 14)
+        font = scalafx.scene.text.Font.font("Calibri", FontWeight.SemiBold, 14)
     }
     val instructionsDialog = new Alert(AlertType.Information) {
         title = "Instructions"
@@ -179,9 +178,9 @@ object MazeGUI extends JFXApp3 {
       title = "Main Menu"
       headerText = "Do you want to load a game or start a new one?"
       contentText = "Choose your option:"
-      buttonTypes = Seq( new javafx.scene.control.ButtonType("New Game"),new javafx.scene.control.ButtonType("Load Game"),
-        new javafx.scene.control.ButtonType("Instructions"),
-        javafx.scene.control.ButtonType.CLOSE)
+      buttonTypes =
+        Seq(new javafx.scene.control.ButtonType("New Game"), new javafx.scene.control.ButtonType("Load Game") ,
+        new javafx.scene.control.ButtonType("Instructions"), javafx.scene.control.ButtonType.CLOSE )
     }
 
 
