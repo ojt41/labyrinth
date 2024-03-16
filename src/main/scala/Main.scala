@@ -163,7 +163,6 @@ object MazeGUI extends JFXApp3 {
     spamKKey()
 
 
-    //maze.passages.foreach(x => println(x.toString()))
     val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
     opponentRat = Rat(passageInRight)
 
@@ -224,7 +223,6 @@ object MazeGUI extends JFXApp3 {
       }
       if (rat.currentPos == opponentRat.currentPos) {
         eliminated = true
-        println("condition met")
         DisplayMessages.showVictoryMessage()
         start()
       }
@@ -272,16 +270,12 @@ object MazeGUI extends JFXApp3 {
         opponentRatMoveTask.run()
         if (rat.currentPos == opponentRat.currentPos) {
           eliminated = true
-          println("within while loop")
           DisplayMessages.showVictoryMessage()
           MazeGUI.start()
       }
-        Thread.sleep(time) // delay of val time milliseconds, value set at 200 ms so 5 moves a second.
+        Thread.sleep(time) // delay of val time milliseconds, value set at 350 ms so 3 moves a second.
       }
       eliminated = true
-      println("hello")
-      println(rat.currentPos)
-      println(opponentRat.currentPos)
       DisplayMessages.showVictoryMessage()
       game.endGame(maze, opponentRat)
     }
