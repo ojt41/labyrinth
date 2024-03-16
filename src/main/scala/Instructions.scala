@@ -49,4 +49,5 @@ object Instructions {
 
       |Enjoy playing "Lost in Maze"!
     """.stripMargin
+
 }
