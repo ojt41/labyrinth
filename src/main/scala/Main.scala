@@ -18,7 +18,6 @@ import scala.util.Random
 
 object MazeGUI extends JFXApp3 {
   val robot = new Robot()
-
   var length: Int = _
   var mazeWid: Int = _
 
@@ -66,9 +65,7 @@ object MazeGUI extends JFXApp3 {
         start()
   }
 
-  def solveAndHighlight(): Unit = {
-    solution = maze.solveMaze(rat)
-  }
+  def solveAndHighlight(): Unit = solution = maze.solveMaze(rat)
 
   def showSaveMaze(maze: Maze): Unit = {
     val saveDialog = new TextInputDialog() {
@@ -78,11 +75,9 @@ object MazeGUI extends JFXApp3 {
     val saveResult = saveDialog.showAndWait()
     saveResult match {
       case Some("") =>
-
       case Some(filename) =>
         game.storage.writeMazeData(maze, filename)
         println(s"Maze saved to: $filename")
-
       case None =>
     }
   }
@@ -123,7 +118,6 @@ object MazeGUI extends JFXApp3 {
         new javafx.scene.control.ButtonType("Instructions"), javafx.scene.control.ButtonType.CLOSE )
     }
 
-
     val result = loadOrNewDialog.showAndWait()
     result match {
       case Some(loadGameButton) if loadGameButton.getText == "Load Game" =>{
@@ -158,7 +152,6 @@ object MazeGUI extends JFXApp3 {
     }
     spamKKey()
 
-
     val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
     opponentRat = Rat(passageInRight)
 
@@ -170,7 +163,6 @@ object MazeGUI extends JFXApp3 {
     gc = canvas.graphicsContext2D
 
     MazeDraw.drawMaze()
-
 
     def resetZoom(): Unit = {
       scaleFactor = 800 / maxLength
@@ -234,22 +226,20 @@ object MazeGUI extends JFXApp3 {
 
     var lastOpponentRatMove: Passage = opponentRat.currentPos
 
-    def moveOpponentRat(): Unit = {
+    def moveOpponentRat(): Unit = 
       val possibleMoves = maze.possiblePassages(opponentRat.currentPos)
       val validMoves = possibleMoves.filter(maze.validPassage)
         .filter(_ != lastOpponentRatMove) // Exclude last move
 
-      if (validMoves.nonEmpty) {
+      if (validMoves.nonEmpty) then
         val newOpponentRatPos = validMoves(Random.nextInt(validMoves.length))
         lastOpponentRatMove = opponentRat.currentPos
         opponentRat.currentPos = newOpponentRatPos
-      }
-      if (possibleMoves.length == 1) {
+        
+      if (possibleMoves.length == 1) then
         val helper = Passage(opponentRat.currentPos.x, opponentRat.currentPos.y) // this makes a true copy of the currentPos
         opponentRat.currentPos = lastOpponentRatMove
         lastOpponentRatMove = helper
-      }
-    }
 
 
     val opponentRatMoveTask = new Runnable {
@@ -262,11 +252,11 @@ object MazeGUI extends JFXApp3 {
       val time = 350   // this is time in ms
       while (rat.currentPos != opponentRat.currentPos && rat.currentPos != Passage(maze.len - 1, maze.wid - 1)) {
         opponentRatMoveTask.run()
-        if (rat.currentPos == opponentRat.currentPos) {
+        if (rat.currentPos == opponentRat.currentPos) then
           eliminated = true
           DisplayMessages.showVictoryMessage()
           MazeGUI.start()
-      }
+          
         Thread.sleep(time) // delay of val time milliseconds, value set at 350 ms so 3 moves a second.
       }
       eliminated = true
@@ -274,20 +264,11 @@ object MazeGUI extends JFXApp3 {
       game.endGame(maze, opponentRat)
     }
 
-
-
     canvas.onScroll = (event: ScrollEvent) => {
       val zoomFactor = 1.1
       val deltaY = event.deltaY
-
-      if (deltaY < 0) {
-        //Zoom out
-        scaleFactor /= zoomFactor
-      } else {
-        //Zoom in
-        scaleFactor *= zoomFactor
-      }
-
+      if (deltaY < 0) then scaleFactor /= zoomFactor //Zoom out 
+      else scaleFactor *= zoomFactor //Zoom in
       drawMaze()
       event.consume()
     }
@@ -300,13 +281,10 @@ object MazeGUI extends JFXApp3 {
     canvas.onMouseDragged = (event: MouseEvent) => {
       val deltaX = event.x - lastMouseX
       val deltaY = event.y - lastMouseY
-
       lastMouseX = event.x
       lastMouseY = event.y
-
       panOffsetX += deltaX / scaleFactor
       panOffsetY += deltaY / scaleFactor
-
       drawMaze()
     }
 
