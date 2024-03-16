@@ -8,9 +8,9 @@ object Instructions {
       |and possibly being eliminated by the Opponent rat.
 
       |Starting the Game:
-      |1. When you start the game, you will be prompted with a dialog to choose between loading a saved game or starting a new one.
-      |   - Load Game: If you have a saved game, you can load it and continue from where you left off.
-      |   - New Game: Start a new game by entering the dimensions of the maze (length and width).
+      |When you start the game, you will be prompted with a dialog to choose between loading a saved game or starting a new one.
+      |  - Load Game: If you have a saved game, you can load it and continue from where you left off.
+      |  - New Game: Start a new game by entering the dimensions of the maze (length and width).
 
       |Controls:
       |- Use the arrow keys (Up, Down, Left, Right) to move the rat through the maze.
