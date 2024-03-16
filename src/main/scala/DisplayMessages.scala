@@ -5,7 +5,7 @@ import scalafx.stage.FileChooser
 
 object DisplayMessages {
 
-  def errorthrow() =
+  def errorthrow() = // Gives warning if dimension input is invalid.
     val newAlert = Alert(AlertType.Error)
     newAlert.title = "Invalid input"
     newAlert.contentText = "Enter a valid positive integer between 10 and 200."
@@ -14,17 +14,17 @@ object DisplayMessages {
 
   def lengthObtainer(result :Option[String]) =
     try{
-          length = result.getOrElse("").toInt
-          if length > 200 || length < 10 then
+          length = result.getOrElse("").toInt // throws an error if string cant be converted to Int.
+          if length > 200 || length < 10 then // Restricts the dimensions to 10 to 200 (inclusive)
             throw Error()
         }
         catch
-          case _ =>
+          case _ => // if error (invalid string to Int, or outside restricition, a warning is shown.)
             errorthrow()
 
   def widthObtainer(result :Option[String]) =
     try{
-          mazeWid = result.getOrElse("").toInt
+          mazeWid = result.getOrElse("").toInt // similar to lengthObtainer method.
           if mazeWid > 200 || mazeWid < 10 then
             throw Error()
         }
@@ -33,11 +33,9 @@ object DisplayMessages {
             errorthrow()
 
   def showVictoryMessage(): Unit = {
+    // handles the victory message depending on the circumstances of the gameplay.
     spamKKey()
-    println("show victory message")
-    if eliminated then println("it has been eliminated")
     val alert = new Alert(AlertType.Information)
-    println(eliminated)
     alert.title = if eliminated then
       "You lost"
     else if (!helpUsed && !game.endGame(maze, opponentRat)) then
@@ -69,6 +67,7 @@ object DisplayMessages {
   }
 
   def loadMaze(): Unit = {
+    // initialises a GUI based file selector. If file is corrupted/wrong format, a warning message is shown.
     val fileChooser = new FileChooser()
     fileChooser.title = "Load Maze"
     val selectedFile = fileChooser.showOpenDialog(stage)
@@ -76,14 +75,16 @@ object DisplayMessages {
       try{
       maze = game.storage.readMazeData(selectedFile.getPath)
       }
-      catch
+      catch{
         case e: Exception =>
          val newallert = new Alert(AlertType.Error)
          newallert.title = "Wrong format"
          newallert.contentText = "Load a valid Maze file"
          newallert.showAndWait()
-         loadMaze()
-     finally
+         loadMaze() // recursively call function loadMaze until valid file is selected.
+      }
+        
+      finally                 //Game is initialised according to loaded file, if its correct format. 
           length = maze.len
           mazeWid = maze.wid
           rat = game.rat
