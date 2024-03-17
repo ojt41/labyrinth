@@ -86,5 +86,7 @@ object DisplayMessages {
           rat = game.rat
           game.startGame(maze)
     }
+    else
+      System.exit(0)
   }
 }
