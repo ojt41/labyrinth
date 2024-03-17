@@ -73,10 +73,10 @@ object DisplayMessages {
       }
       catch{
         case e: Exception =>
-         val newallert = new Alert(AlertType.Error)
-         newallert.title = "Wrong format"
-         newallert.contentText = "Load a valid Maze file"
-         newallert.showAndWait()
+         val newAlert = new Alert(AlertType.Error)
+         newAlert.title = "Wrong format"
+         newAlert.contentText = "Load a valid Maze file"
+         newAlert.showAndWait()
          loadMaze() // recursively call function loadMaze until valid file is selected.
       }
 

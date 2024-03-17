@@ -132,12 +132,12 @@ object MazeGUI extends JFXApp3 {
       case _ => {
         val dialogLength = new TextInputDialog() {
           title = "Enter Length"
-          headerText = "Enter the length of maze:"
+          headerText = "Enter a valid integer between 10 and 200 as the length of maze:"
         }
 
         val dialogWidth = new TextInputDialog() {
           title = "Enter Width"
-          headerText = "Enter the width of the maze:"
+          headerText = "Enter a valid integer between 10 and 200 as the width of the maze:"
         }
 
         val lengthResult = dialogLength.showAndWait()
@@ -150,7 +150,7 @@ object MazeGUI extends JFXApp3 {
         }
     }
     spamKKey()
-    
+
     val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
     opponentRat = Rat(passageInRight)
 
