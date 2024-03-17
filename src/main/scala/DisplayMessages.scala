@@ -10,27 +10,23 @@ object DisplayMessages {
     newAlert.title = "Invalid input"
     newAlert.contentText = "Enter a valid positive integer between 10 and 200."
     newAlert.showAndWait()
-    start()
+    System.exit(0) // exits the game if error is caused.
 
-  def lengthObtainer(result :Option[String]) =
+  def dimensionObtainer(result1 :Option[String], result2: Option[String]) =
     try{
-          length = result.getOrElse(" ").toInt // throws an error if string cant be converted to Int.
+          length = result1.getOrElse(" ").toInt // throws an error if string cant be converted to Int.
           if length > 200 || length < 10 then // Restricts the dimensions to 10 to 200 (inclusive)
+            throw Error()
+
+          mazeWid = result2.getOrElse("").toInt // similar to lengthObtainer method.
+          if mazeWid > 200 || mazeWid < 10 then
             throw Error()
         }
         catch
           case _ => // if error (invalid string to Int, or outside restricition, a warning is shown.)
             showErrorAlert()
 
-  def widthObtainer(result :Option[String]) =
-    try{
-          mazeWid = result.getOrElse("").toInt // similar to lengthObtainer method.
-          if mazeWid > 200 || mazeWid < 10 then
-            throw Error()
-        }
-        catch
-          case _ =>
-            showErrorAlert()
+
 
   def showVictoryMessage(): Unit = {
     // handles the victory message depending on the circumstances of the gameplay.
@@ -83,8 +79,8 @@ object DisplayMessages {
          newallert.showAndWait()
          loadMaze() // recursively call function loadMaze until valid file is selected.
       }
-        
-      finally                 //Game is initialised according to loaded file, if its correct format. 
+
+      finally                 //Game is initialised according to loaded file, if its correct format.
           length = maze.len
           mazeWid = maze.wid
           rat = game.rat

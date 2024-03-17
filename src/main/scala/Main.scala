@@ -142,8 +142,7 @@ object MazeGUI extends JFXApp3 {
 
         val lengthResult = dialogLength.showAndWait()
         val widthResult = dialogWidth.showAndWait()
-        DisplayMessages.lengthObtainer(lengthResult)
-        DisplayMessages.widthObtainer(widthResult)
+        DisplayMessages.dimensionObtainer(lengthResult, widthResult)
 
         maze = game.newMaze(length, mazeWid)
         rat = game.rat
@@ -151,7 +150,7 @@ object MazeGUI extends JFXApp3 {
         }
     }
     spamKKey()
-
+    
     val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
     opponentRat = Rat(passageInRight)
 
