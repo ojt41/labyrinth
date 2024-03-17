@@ -23,14 +23,25 @@ class StorageTest extends AnyFunSuite {
     assert(writtenMaze.passagesAsString() == readMaze.passagesAsString())
   }
 
-  // This tests for 1000 randomly selected dimensions for the maze in range 10 to 200.
-  test("Test 1000 random mazes") {
+  // This tests for all possible randomly selected dimensions for the maze in range 10 to 200.
+  // This test took about 5 minutes on my computer.
+  test("Test all possible combinations of random mazes") {
     val game = Game(new Rat(Passage(0, 0)), new Storage)
 
-    for (x <- 1 to 1000) {
-      // Generate random sizes between 10 and 200 inclusive
-      val randomLength = scala.util.Random.between(10, 201)
-      val randomWidth = scala.util.Random.between(10, 201)
+    // Create a set to keep track of generated maze sizes
+    var generatedSizes = Set[(Int, Int)]()
+
+    for (_ <- 1 to (200 - 9) * (200 - 9) / 2) {
+      var randomLength = scala.util.Random.between(10, 201)
+      var randomWidth = scala.util.Random.between(10, 201)
+
+      // Ensure that the generated size is not in the set
+      while (generatedSizes.contains((randomLength, randomWidth))) {
+        randomLength = scala.util.Random.between(10, 201)
+        randomWidth = scala.util.Random.between(10, 201)
+      }
+
+      generatedSizes += ((randomLength, randomWidth))
 
       // Create and write the maze
       val writtenMaze = game.newMaze(randomLength, randomWidth)
@@ -47,6 +58,7 @@ class StorageTest extends AnyFunSuite {
       assert(writtenMaze.passagesAsString() == readMaze.passagesAsString())
     }
   }
+
 
 
   test("Test load non-existent maze") {
