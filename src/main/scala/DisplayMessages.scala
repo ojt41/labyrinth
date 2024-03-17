@@ -5,7 +5,7 @@ import scalafx.stage.FileChooser
 
 object DisplayMessages {
 
-  def errorthrow() = // Gives warning if dimension input is invalid.
+  def showErrorAlert() = // Gives warning if dimension input is invalid.
     val newAlert = Alert(AlertType.Error)
     newAlert.title = "Invalid input"
     newAlert.contentText = "Enter a valid positive integer between 10 and 200."
@@ -14,13 +14,13 @@ object DisplayMessages {
 
   def lengthObtainer(result :Option[String]) =
     try{
-          length = result.getOrElse("").toInt // throws an error if string cant be converted to Int.
+          length = result.getOrElse(" ").toInt // throws an error if string cant be converted to Int.
           if length > 200 || length < 10 then // Restricts the dimensions to 10 to 200 (inclusive)
             throw Error()
         }
         catch
           case _ => // if error (invalid string to Int, or outside restricition, a warning is shown.)
-            errorthrow()
+            showErrorAlert()
 
   def widthObtainer(result :Option[String]) =
     try{
@@ -30,7 +30,7 @@ object DisplayMessages {
         }
         catch
           case _ =>
-            errorthrow()
+            showErrorAlert()
 
   def showVictoryMessage(): Unit = {
     // handles the victory message depending on the circumstances of the gameplay.
