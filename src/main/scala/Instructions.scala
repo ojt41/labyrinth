@@ -1,3 +1,4 @@
+// This is a standalone object used for displaying instructions using the GUI
 object Instructions {
   val ins: String =
     """Lost in Maze - Instructions
