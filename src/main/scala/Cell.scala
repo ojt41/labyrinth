@@ -1,6 +1,6 @@
   case class Cell(row: Int, col: Int) {
     override def toString: String = s"(${row},${col})"
-
+    // calculating the neighbors. 
     def neighbors(grid: Array[Array[Boolean]]): List[Cell] = {
       val distance = 2
       val possibleNeighbors = List(
@@ -18,6 +18,7 @@
         .map { case (r, c) => Cell(r, c) }
     }
 
+    // Calculating valid passages
     def valid(grid: Array[Array[Boolean]]): Boolean = {
       row >= 0 && row < grid.length &&
         col >= 0 && col < grid(0).length &&

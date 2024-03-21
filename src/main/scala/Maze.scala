@@ -16,8 +16,6 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
   def solveMaze(rat: Rat): Array[Passage] = {
     val start = rat.currentPos
     val end = Passage(this.len - 1, this.wid - 1)
-    /*println(start)
-    println(end)*/
     val queue = mutable.Queue[Passage]()
     val visited = mutable.Set[Passage]()
     val howToGet = mutable.Map[Passage, Passage]()
