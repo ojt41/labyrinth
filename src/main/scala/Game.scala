@@ -1,3 +1,4 @@
+import MazeGenerator.printMazeWithStartAndEnd
 import scala.collection.mutable
 import scala.util.Random
 
@@ -36,24 +37,10 @@ class Game(val rat: Rat, val storage: Storage ) {
 
     val newMazeReturn = new Maze(len, wid, passages.toArray, walls.toArray, bridges)
 
-    def printMazeWithStartAndEnd(grid: Array[Array[Boolean]], start: Cell, end: Cell): Unit = {
-    grid.indices.foreach { row =>
-      grid(row).indices.foreach { col =>
-        if (row == start.row && col == start.col) {
-          print("S")
-        } else if (row == end.row && col == end.col) {
-          print("E")
-        } else {
-          if (grid(row)(col)) print("_") else print("#")
-        }
-      }
-      println()
-    }
-
-  }
     val start = Cell(rows / 2, cols / 2)
     val end = Cell(rows - 1, cols - 1)
-    printMazeWithStartAndEnd(grid, start, end)
+    // Uncomment the following line to print the maze.
+    //printMazeWithStartAndEnd(grid, start, end) 
 
     newMazeReturn
   }
@@ -70,15 +57,3 @@ class Game(val rat: Rat, val storage: Storage ) {
   }
 }
 
-/*object hello extends App:
-  val hell = Game(new Rat(Passage(0,0)), new Storage)
-
-  val newMaze = hell.newMaze(21, 22)
-
-  hell.startGame(newMaze)
-
-  println(newMaze)
-  println(newMaze.passages.mkString("Array(", ", ", ")"))
-  //newMaze.bridges.foreach(_.printBridge())
-  println(newMaze.solveMaze(hell.rat).mkString("Array(", ", ", ")"))
-*/
