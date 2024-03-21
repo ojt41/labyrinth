@@ -2,7 +2,8 @@ import scala.collection.mutable
 import scala.util.Random
 
 class Game(val rat: Rat, val storage: Storage ) {
-
+  
+  // Creates a new maze object
   def newMaze(len: Int, wid: Int): Maze = {
     val rows = len
     val cols = wid
