@@ -1,9 +1,23 @@
-import MazeGUI.{askForUserName, eliminated, game, helpUsed, length, maze, mazeWid, movesTaken, opponentRat, rat, showSaveMaze, spamKKey, stage, start}
+import MazeGUI.*
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
 import scalafx.stage.FileChooser
 
 object DisplayMessages {
+
+  def dimensionObtainer(result1: Option[String], result2: Option[String]) =
+    try {
+      length = result1.getOrElse(" ").toInt // throws an error if string cant be converted to Int.
+      if length > 200 || length < 10 then // Restricts the dimensions to 10 to 200 (inclusive)
+        throw Error()
+
+      mazeWid = result2.getOrElse("").toInt // similar to lengthObtainer method.
+      if mazeWid > 200 || mazeWid < 10 then
+        throw Error()
+    }
+    catch
+      case _ => // if error (invalid string to Int, or outside restricition, a warning is shown.)
+        showErrorAlert()
 
   def showErrorAlert() = // Gives warning if dimension input is invalid.
     val newAlert = Alert(AlertType.Error)
@@ -11,22 +25,6 @@ object DisplayMessages {
     newAlert.contentText = "Enter a valid positive integer between 10 and 200."
     newAlert.showAndWait()
     System.exit(0) // exits the game if error is caused.
-
-  def dimensionObtainer(result1 :Option[String], result2: Option[String]) =
-    try{
-          length = result1.getOrElse(" ").toInt // throws an error if string cant be converted to Int.
-          if length > 200 || length < 10 then // Restricts the dimensions to 10 to 200 (inclusive)
-            throw Error()
-
-          mazeWid = result2.getOrElse("").toInt // similar to lengthObtainer method.
-          if mazeWid > 200 || mazeWid < 10 then
-            throw Error()
-        }
-        catch
-          case _ => // if error (invalid string to Int, or outside restricition, a warning is shown.)
-            showErrorAlert()
-
-
 
   def showVictoryMessage(): Unit = {
     // handles the victory message depending on the circumstances of the gameplay.
@@ -68,23 +66,23 @@ object DisplayMessages {
     fileChooser.title = "Load Maze"
     val selectedFile = fileChooser.showOpenDialog(stage)
     if (selectedFile != null) {
-      try{
-      maze = game.storage.readMazeData(selectedFile.getPath)
+      try {
+        maze = game.storage.readMazeData(selectedFile.getPath)
       }
-      catch{
+      catch {
         case e: Exception =>
-         val newAlert = new Alert(AlertType.Error)
-         newAlert.title = "Wrong format"
-         newAlert.contentText = "Load a valid Maze file"
-         newAlert.showAndWait()
-         loadMaze() // recursively call function loadMaze until valid file is selected.
+          val newAlert = new Alert(AlertType.Error)
+          newAlert.title = "Wrong format"
+          newAlert.contentText = "Load a valid Maze file"
+          newAlert.showAndWait()
+          loadMaze() // recursively call function loadMaze until valid file is selected.
       }
 
-      finally                 //Game is initialised according to loaded file, if its correct format.
-          length = maze.len
-          mazeWid = maze.wid
-          rat = game.rat
-          game.startGame(maze)
+      finally //Game is initialised according to loaded file, if its correct format.
+        length = maze.len
+        mazeWid = maze.wid
+        rat = game.rat
+        game.startGame(maze)
     }
     else
       System.exit(0)

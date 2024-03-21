@@ -19,7 +19,6 @@ object Instructions {
       |- H: Highlight the solution path to the exit (Useful hint).
       |- R: Reset the zoom level to default.
 
-
       |Gameplay:
       |- Your rat starts in the center of the maze.
       |- Navigate through passages and bridges to reach the exit.

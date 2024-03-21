@@ -8,17 +8,17 @@ class Rat(var currentPos: Passage) {
 
   def moveDown(maze: Maze): Unit = {
     val newPos = Passage(currentPos.row + 1, currentPos.col)
-    if (maze.hasPassage(newPos) ||maze.hasBridge(currentPos, newPos)) currentPos = newPos
+    if (maze.hasPassage(newPos) || maze.hasBridge(currentPos, newPos)) currentPos = newPos
   }
 
   def moveLeft(maze: Maze): Unit = {
     val newPos = Passage(currentPos.row, currentPos.col - 1)
-    if (maze.hasPassage(newPos)||maze.hasBridge(currentPos, newPos)) currentPos = newPos
+    if (maze.hasPassage(newPos) || maze.hasBridge(currentPos, newPos)) currentPos = newPos
   }
 
   def moveRight(maze: Maze): Unit = {
     val newPos = Passage(currentPos.row, currentPos.col + 1)
-    if (maze.hasPassage(newPos)|| maze.hasBridge(currentPos, newPos)) currentPos = newPos
+    if (maze.hasPassage(newPos) || maze.hasBridge(currentPos, newPos)) currentPos = newPos
   }
 
   // move to the other end of the bridge

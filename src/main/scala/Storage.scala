@@ -21,13 +21,13 @@ class Storage:
 
       // Pattern matching done where it is observed first, hense used collectFirst. Subsequent occurences are ignored.
 
-      val dimensions = mazeLines.collectFirst {case dimensionsPattern(len, wid)=> (len.toInt, wid.toInt)} // parsing the dimensions
+      val dimensions = mazeLines.collectFirst { case dimensionsPattern(len, wid) => (len.toInt, wid.toInt) } // parsing the dimensions
 
       val passages = mazeLines.collectFirst {
-        case passagesPattern(passagesStr)=>
-          val passageList = passagesStr.split("\\), \\(").map { pairStr =>   //removing the brackets and mapping to Array of Passages.
+        case passagesPattern(passagesStr) =>
+          val passageList = passagesStr.split("\\), \\(").map { pairStr => //removing the brackets and mapping to Array of Passages.
             val pair = pairStr.replaceAll("[()]", "").split(",").map(_.toInt)
-            Passage(pair(0),pair(1))              // arrays consist of consecutive coordinates.
+            Passage(pair(0), pair(1)) // arrays consist of consecutive coordinates.
           }
           passageList
       }
@@ -45,34 +45,34 @@ class Storage:
 
       val bridges = mazeLines.collectFirst {
         case bridgesPattern(bridgesStr) =>
-          val bridgeRegex = """\((\d+),(\d+)\)""" .r                // regex pattern for consecutive coordinates.
+          val bridgeRegex = """\((\d+),(\d+)\)""".r // regex pattern for consecutive coordinates.
           val bridgeMatches = bridgeRegex.findAllMatchIn(bridgesStr) // find all occurences of pairs of coordinates
 
-          val passages = bridgeMatches.map{ matchResult =>
+          val passages = bridgeMatches.map { matchResult =>
             val x = matchResult.group(1).toInt
             val y = matchResult.group(2).toInt
             new Passage(x, y)
-          }.toArray                                                 // creating passages from coordinates
+          }.toArray // creating passages from coordinates
 
-          passages.sliding(2, 2).map{case Array(p1, p2) =>
+          passages.sliding(2, 2).map { case Array(p1, p2) =>
             new Bridge(p1, p2)
-          }.toArray                                                 // creating bridges from consecutive passages,
+          }.toArray // creating bridges from consecutive passages,
 
       }
 
 
       val highscore = mazeLines.collectFirst {
-        case highscorePattern(status, score) => (status, score.toInt)   // parsed highscore
+        case highscorePattern(status, score) => (status, score.toInt) // parsed highscore
       }
 
       (dimensions, passages, walls, bridges, highscore) match {
-        case (Some((len, wid)), Some(passagesList), Some(wallsList), Some(bridgesList) , Some((status, score)))=>
-          new Maze(len, wid, passagesList, wallsList, bridgesList, (status, score))      // if Maze properties exist, return maze
+        case (Some((len, wid)), Some(passagesList), Some(wallsList), Some(bridgesList), Some((status, score))) =>
+          new Maze(len, wid, passagesList, wallsList, bridgesList, (status, score)) // if Maze properties exist, return maze
         case _ =>
-          throw new IllegalArgumentException("Invalid maze data")                        // otherwise throw an error.
+          throw new IllegalArgumentException("Invalid maze data") // otherwise throw an error.
       }
-    } else{
-        throw new IllegalArgumentException("Invalid maze data format. File may have been currupted.")
+    } else {
+      throw new IllegalArgumentException("Invalid maze data format. File may have been currupted.")
     }
   end readMazeData
 
@@ -88,7 +88,7 @@ class Storage:
     mazeData.write(s"Walls: ${maze.wallsAsString()}\n")
     mazeData.write(s"Bridges: ${maze.bridgeAsString()}\n")
     mazeData.write("Highscore: " + maze.highscore.toString() + "\n")
-    mazeData.write("End")          // end of a maze object.
+    mazeData.write("End") // end of a maze object.
 
     mazeData.close()
   end writeMazeData

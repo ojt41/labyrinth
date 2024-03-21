@@ -1,7 +1,6 @@
 import scala.collection.mutable
-import scala.util.Random
 
-class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: Array[Wall],  val bridges: Array[Bridge], var highscore: (String, Int) = ("Anonymous", 99999)) {
+class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: Array[Wall], val bridges: Array[Bridge], var highscore: (String, Int) = ("Anonymous", 99999)) {
   // the 4 following methods are for debugging.
   override def toString: String = s"$len, $wid created"
 
@@ -52,23 +51,23 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
     // Reverse the path to get it from start to end
     path.reverse.toArray
   }
-  
+
   // Finds possible passages from current passage (bridges included)
   def possiblePassages(passage: Passage): List[Passage] = {
     val neighbors = List(
       Passage(passage.row, passage.col - 1), // Left
       Passage(passage.row, passage.col + 1), // Right
       Passage(passage.row - 1, passage.col), // Up
-      Passage(passage.row + 1, passage.col)  // Down
+      Passage(passage.row + 1, passage.col) // Down
     )
-    
+
     // filter bridges that start/end with this passage
     val bridges = this.bridges.filter(bridge =>
-      (bridge.entrance1==passage)||(bridge.entrance2 == passage)
+      (bridge.entrance1 == passage) || (bridge.entrance2 == passage)
     )
 
     // find other end of bridge
-    val bridgePassages = bridges.flatMap{bridge =>
+    val bridgePassages = bridges.flatMap { bridge =>
       if (bridge.entrance1 == passage) then {
         List(bridge.entrance2)
       } else {
@@ -80,12 +79,9 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
 
   // method to check if passage is valid
   def validPassage(passage: Passage): Boolean =
-    (passage.row >= 0) && {passage.row < len && passage.col >= 0
+    (passage.row >= 0) && {
+      passage.row < len && passage.col >= 0
     } && (passage.col < wid && (hasPassage(passage)) || (hasBridge(passage, passage)))
-
-  // method to update highscore
-  def updateHighScore(player: String, movesTaken: Int): Unit =
-    highscore = (player, movesTaken)
 
   // method to check if passage exists in the maze
   def hasPassage(cell: Cell): Boolean =
@@ -94,6 +90,10 @@ class Maze(val len: Int, val wid: Int, val passages: Array[Passage], val walls: 
   // method to check if passages are connected via bridge
   def hasBridge(cell1: Cell, cell2: Cell): Boolean =
     bridges.exists(b => (b.entrance1 == cell1 && b.entrance2 == cell2) || (b.entrance1 == cell2 && b.entrance2 == cell1))
+
+  // method to update highscore
+  def updateHighScore(player: String, movesTaken: Int): Unit =
+    highscore = (player, movesTaken)
 
 }
 

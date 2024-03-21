@@ -2,7 +2,7 @@ import scala.collection.mutable
 import scala.util.Random
 
 object MazeGenerator {
-  
+
   // uses recursive backtracking to create a maze
   def generateMaze(rows: Int, cols: Int): Array[Array[Boolean]] = {
     val grid = Array.ofDim[Boolean](rows, cols)
@@ -66,9 +66,9 @@ object MazeGenerator {
     grid.indices.foreach { row =>
       grid(row).indices.foreach { col =>
         if (row == start.row && col == start.col) {
-          print("S") 
+          print("S")
         } else if (row == end.row && col == end.col) {
-          print("E") 
+          print("E")
         } else {
           if (grid(row)(col)) print("_") else print("#")
         }

@@ -10,6 +10,7 @@ import scalafx.scene.input.{KeyCode, KeyEvent, MouseEvent, ScrollEvent}
 import scalafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
+
 import java.awt.Robot
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -20,7 +21,6 @@ object MazeGUI extends JFXApp3 {
   val robot = new Robot()
   var length: Int = _
   var mazeWid: Int = _
-
   val game = new Game(new Rat(Passage(length / 2, mazeWid / 2)), new Storage)
   var maze: Maze = _
   var rat: Rat = _
@@ -47,17 +47,17 @@ object MazeGUI extends JFXApp3 {
 
   def showInstructions(): Unit = {
     val instructionsTextArea = new TextArea {
-        text = Instructions.ins
-        editable = false
-        wrapText = true
-        prefWidth = 800
-        prefHeight = 600
-        font = scalafx.scene.text.Font.font("Calibri", FontWeight.SemiBold, 14)
+      text = Instructions.ins
+      editable = false
+      wrapText = true
+      prefWidth = 800
+      prefHeight = 600
+      font = scalafx.scene.text.Font.font("Calibri", FontWeight.SemiBold, 14)
     }
     val instructionsDialog = new Alert(AlertType.Information) {
-        title = "Instructions"
-        headerText = "Maze Game Instructions"
-        dialogPane().content = instructionsTextArea
+      title = "Instructions"
+      headerText = "Maze Game Instructions"
+      dialogPane().content = instructionsTextArea
     }
     val inputs = instructionsDialog.showAndWait()
     inputs match
@@ -114,13 +114,13 @@ object MazeGUI extends JFXApp3 {
       headerText = "Do you want to load a game or start a new one?"
       contentText = "Choose your option:"
       buttonTypes =
-        Seq(new javafx.scene.control.ButtonType("New Game"), new javafx.scene.control.ButtonType("Load Game") ,
-        new javafx.scene.control.ButtonType("Instructions"), javafx.scene.control.ButtonType.CLOSE )
+        Seq(new javafx.scene.control.ButtonType("New Game"), new javafx.scene.control.ButtonType("Load Game"),
+          new javafx.scene.control.ButtonType("Instructions"), javafx.scene.control.ButtonType.CLOSE)
     }
 
     val result = loadOrNewDialog.showAndWait()
     result match {
-      case Some(loadGameButton) if loadGameButton.getText == "Load Game" =>{
+      case Some(loadGameButton) if loadGameButton.getText == "Load Game" => {
         DisplayMessages.loadMaze()
       }
       case Some(instructions) if instructions.getText == "Instructions" => {
@@ -147,11 +147,13 @@ object MazeGUI extends JFXApp3 {
         maze = game.newMaze(length, mazeWid)
         rat = game.rat
         game.startGame(maze)
-        }
+      }
     }
     spamKKey()
 
-    val passageInRight = maze.passages.filter(n=> {n.x == 1}).last  //this places enemy in right top coner
+    val passageInRight = maze.passages.filter(n => {
+      n.x == 1
+    }).last //this places enemy in right top coner
     opponentRat = Rat(passageInRight)
 
     val maxLength = math.max(mazeWid, length)
@@ -225,7 +227,7 @@ object MazeGUI extends JFXApp3 {
 
     var lastOpponentRatMove: Passage = opponentRat.currentPos
 
-    def moveOpponentRat(): Unit = 
+    def moveOpponentRat(): Unit =
       val possibleMoves = maze.possiblePassages(opponentRat.currentPos)
       val validMoves = possibleMoves.filter(maze.validPassage)
         .filter(_ != lastOpponentRatMove) // Exclude last move
@@ -234,7 +236,7 @@ object MazeGUI extends JFXApp3 {
         val newOpponentRatPos = validMoves(Random.nextInt(validMoves.length))
         lastOpponentRatMove = opponentRat.currentPos
         opponentRat.currentPos = newOpponentRatPos
-        
+
       if (possibleMoves.length == 1) then
         val helper = Passage(opponentRat.currentPos.x, opponentRat.currentPos.y) // this makes a true copy of the currentPos
         opponentRat.currentPos = lastOpponentRatMove
@@ -248,14 +250,14 @@ object MazeGUI extends JFXApp3 {
     }
 
     val opponentRatMoveTimer = Future {
-      val time = 350   // this is time in ms
+      val time = 350 // this is time in ms
       while (rat.currentPos != opponentRat.currentPos && rat.currentPos != Passage(maze.len - 1, maze.wid - 1)) {
         opponentRatMoveTask.run()
         if (rat.currentPos == opponentRat.currentPos) then
           eliminated = true
           DisplayMessages.showVictoryMessage()
           MazeGUI.start()
-          
+
         Thread.sleep(time) // delay of val time milliseconds, value set at 350 ms so 3 moves a second.
       }
       eliminated = true

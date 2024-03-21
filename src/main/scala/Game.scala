@@ -2,8 +2,8 @@ import MazeGenerator.printMazeWithStartAndEnd
 import scala.collection.mutable
 import scala.util.Random
 
-class Game(val rat: Rat, val storage: Storage ) {
-  
+class Game(val rat: Rat, val storage: Storage) {
+
   // Creates a new maze object
   def newMaze(len: Int, wid: Int): Maze = {
     val rows = len
@@ -31,9 +31,9 @@ class Game(val rat: Rat, val storage: Storage ) {
 
     // found dividing by 4 to generate bridges consistently based on maze dimension.
     while i < (rows + cols) / 4 do
-      if randomPassage(i).row != randomPassage(i+1).row && randomPassage(i).col != randomPassage(i+1).col then
+      if randomPassage(i).row != randomPassage(i + 1).row && randomPassage(i).col != randomPassage(i + 1).col then
         // should not be in the same row and column
-        bridgesE.append(new Bridge(randomPassage(i), randomPassage(i+1)))
+        bridgesE.append(new Bridge(randomPassage(i), randomPassage(i + 1)))
       i += 2
 
     val bridges = bridgesE.take(6).toArray // take at max 6 bridges
