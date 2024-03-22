@@ -19,6 +19,7 @@ import scala.util.Random
 
 object MazeGUI extends JFXApp3 {
   val robot = new Robot()
+  // Declare variables for maze dimensions and game elements.
   var length: Int = _
   var mazeWid: Int = _
   val game = new Game(new Rat(Passage(length / 2, mazeWid / 2)), new Storage)
@@ -26,20 +27,19 @@ object MazeGUI extends JFXApp3 {
   var rat: Rat = _
   var opponentRat: Rat = _
 
+  // Variables for game state
   var highlightSolution: Boolean = false
   var solution: Array[Passage] = Array.empty
-
   var helpUsed = false
   var eliminated = false
   var movesTaken = 0
 
+  // Variables for canvas dimensions, graphics context, and panning
   var scaleFactor: Double = 1.0
-
   var canvasWidth: Double = _
   var canvasHeight: Double = _
   var canvas: Canvas = _
   var gc: GraphicsContext = _
-
   var lastMouseX: Double = _
   var lastMouseY: Double = _
   var panOffsetX: Double = 0.0
@@ -67,6 +67,7 @@ object MazeGUI extends JFXApp3 {
 
   def solveAndHighlight(): Unit = solution = maze.solveMaze(rat)
 
+  // Method to prompt user for filename and save the maze
   def showSaveMaze(maze: Maze): Unit = {
     val saveDialog = new TextInputDialog() {
       title = "Save Maze"
@@ -95,6 +96,7 @@ object MazeGUI extends JFXApp3 {
     }
   }
 
+  // Toggles CapsLock key to exit current thread and activate main thread
   def spamKKey(): Future[Unit] = Future {
     {
       robot.keyPress(java.awt.event.KeyEvent.VK_CAPS_LOCK)
@@ -165,6 +167,7 @@ object MazeGUI extends JFXApp3 {
 
     MazeDraw.drawMaze()
 
+    // reset zoom with "R"
     def resetZoom(): Unit = {
       scaleFactor = 800 / maxLength
       panOffsetX = 0.0
@@ -174,6 +177,7 @@ object MazeGUI extends JFXApp3 {
     canvas.requestFocus()
     canvas.focusTraversable = true
 
+    // handle keypresses
     canvas.onKeyPressed = (event: scalafx.scene.input.KeyEvent) => {
       event.code match {
         case KeyCode.Up =>
@@ -265,6 +269,7 @@ object MazeGUI extends JFXApp3 {
       game.endGame(maze, opponentRat)
     }
 
+    // handle zooming and panning
     canvas.onScroll = (event: ScrollEvent) => {
       val zoomFactor = 1.1
       val deltaY = event.deltaY

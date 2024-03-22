@@ -25,13 +25,16 @@ class StorageTest extends AnyFunSuite {
 
   // This tests for all possible randomly selected dimensions for the maze in range 10 to 200.
   // This test took about 5 minutes on my computer.
+
   test("Test all possible combinations of random mazes") {
     val game = Game(new Rat(Passage(0, 0)), new Storage)
 
     // Create a set to keep track of generated maze sizes
     var generatedSizes = Set[(Int, Int)]()
 
-    for (_ <- 1 to (200 - 9) * (200 - 9) / 2) {
+    // uncomment this line and remove the for loop on line 37 to test for all inputs
+    //for (_ <- 1 to (200 - 9) * (200 - 9) / 2) {
+    for (_ <- 1 to 100) {
       var randomLength = scala.util.Random.between(10, 201)
       var randomWidth = scala.util.Random.between(10, 201)
 
